@@ -540,7 +540,7 @@ body #app {
         height: max(
             110px,
             calc(
-                100dvh - var(--portrait-top) - var(--portrait-head) - var(--portrait-gap) - var(--portrait-board) -
+                var(--viewport-height, 100dvh) - var(--portrait-top) - var(--portrait-head) - var(--portrait-gap) - var(--portrait-board) -
                     112px - max(12px, env(safe-area-inset-bottom))
             )
         );

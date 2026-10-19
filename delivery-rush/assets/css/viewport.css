@@ -1,0 +1,87 @@
+/* Keep fixed screens inside the visible part of the iframe, not its oversized layout viewport. */
+:root {
+    --viewport-top: 0px;
+    --viewport-height: 100vh;
+}
+@supports (height: 100dvh) {
+    :root { --viewport-height: 100dvh; }
+}
+#game-viewport {
+    position: fixed;
+    top: var(--viewport-top);
+    left: 0;
+    width: 100%;
+    height: var(--viewport-height);
+    overflow: hidden;
+    transform: translateZ(0);
+    container-type: size;
+}
+body #app {
+    height: 100%;
+}
+#joy-float {
+    margin-top: calc(-1 * var(--viewport-top));
+}
+#screen-home .home-layout {
+    gap: 16px;
+    overflow-y: auto;
+    touch-action: pan-y;
+}
+#screen-home .home-top,
+#screen-home .home-bottom {
+    flex-shrink: 0;
+}
+@media (orientation: landscape) and (min-width: 820px) {
+    body {
+        --desktop-h: var(--viewport-height);
+        --desktop-board: min(
+            calc(var(--viewport-height) * 0.74),
+            calc(100vw - 48px),
+            calc(var(--viewport-height) - 210px)
+        );
+    }
+}
+@media (orientation: portrait) {
+    body {
+        --portrait-board: min(
+            calc(100vw - 2 * var(--portrait-edge)),
+            calc(var(--viewport-height) - var(--portrait-top) - var(--portrait-head) - 218px)
+        );
+    }
+}
+@media (orientation: portrait) and (max-width: 699px) {
+    #screen-home {
+        --u: min(2.6vw, calc(var(--viewport-height) * 0.02));
+    }
+    #screen-home .home-layout {
+        padding-top: max(calc(var(--viewport-height) * 0.1), env(safe-area-inset-top));
+        padding-bottom: max(calc(var(--viewport-height) * 0.03), env(safe-area-inset-bottom));
+    }
+}
+/* Long instructions/rankings remain scrollable; short result screens fit without shrinking tap targets. */
+@container (max-height: 620px) {
+    .screen:not(#screen-home) .panel {
+        margin-top: 64px;
+        padding: 16px 12px;
+    }
+    .screen:not(#screen-home) .logo-slot {
+        margin-bottom: 8px;
+    }
+    .screen:not(#screen-home) .title,
+    .screen:not(#screen-home) .title.small {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    .screen:not(#screen-home) .start-actions {
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .screen:not(#screen-home) .start-actions .btn {
+        --h: 44px;
+        flex-shrink: 0;
+        font-size: 13px;
+    }
+    .screen:not(#screen-home) .end-timer {
+        margin-top: 8px;
+    }
+}
