@@ -1,0 +1,806 @@
+/* =============================================================
+   MAZE - GAMEPLAY ONLY v2 (audited)
+   Load after style-common.css. Screens outside gameplay are shared.
+   Includes board, HUD, canvas, controls, game logo/back button, lives,
+   result banner, token marker and all gameplay responsive/keyframe rules.
+   ============================================================= */
+
+:root { --win: #7CFC7C; --logo-pad-sm: 8px; }
+
+#app{
+    height: 100%; max-width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+}#play-block{
+    width: 100%; max-width: 620px; min-width: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    margin-top: auto; margin-bottom: auto; flex: 0 0 auto;
+}#hud{
+    width: 100%; min-width: 0;
+    display: flex; align-items: stretch; gap: 8px; flex: 0 0 auto;
+    padding-left: clamp(56px, 8vw, 100px);
+    padding-right: clamp(56px, 8vw, 100px);
+}.hud-item{
+    flex: 1 1 0; min-width: 0; overflow: hidden;
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 7px 8px; text-align: center;
+}.hud-label{
+    display: block; font-size: 10px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}.hud-value{
+    display: block; font-size: 22px; font-weight: 700; line-height: 1.15;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}.hud-value.bump{ animation: bump .26s ease-out; }@keyframes bump {
+    0%   { transform: scale(1);    color: var(--text); }
+    40%  { transform: scale(1.32); color: var(--gold); }
+    100% { transform: scale(1);    color: var(--text); }
+}#stage{
+    position: relative; width: 100%;
+    max-width: min(100%, calc(100vh - 190px), 620px);
+    min-width: 0; aspect-ratio: 1 / 1;
+    border-radius: 16px; overflow: hidden;
+    border: 2px solid var(--border);
+    box-shadow: 0 18px 45px rgba(0,0,0,.55);
+    background: var(--navy-900); flex: 0 0 auto;
+}canvas{ display: block; width: 100%; height: 100%; }#thumb-zone{
+    width: 100%; max-width: 620px; min-width: 0;
+    flex: 1 1 auto; min-height: 0; max-height: 30vh; margin-top: 12px;
+    border-radius: 18px; border: 1px dashed rgba(63,71,184,.32);
+    transition: opacity .25s ease, border-color .25s ease;
+    background: radial-gradient(ellipse 70% 55% at 50% 55%, rgba(63,71,184,.13) 0%, rgba(63,71,184,0) 70%);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 14px; pointer-events: none;
+}#thumb-zone.hidden{
+    display: flex !important; opacity: 0;
+    border-color: transparent; background: none; pointer-events: none;
+}#thumb-zone.hidden .thumb-label{ opacity: 0; }.thumb-label{
+    font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+    color: rgba(152,160,208,.4);
+}.logo-corner{
+    position: absolute; right: 10px; bottom: 10px; z-index: 5;
+    opacity: .5; pointer-events: none; border-radius: 7px; line-height: 0;
+}.logo-corner img{ display: block; width: 60px; height: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,.7)); }.logo-corner.mode-plate{ background: #fff; padding: var(--logo-pad-sm, 8px); opacity: .82; }.logo-corner.mode-plate img{ width: 78px; filter: none; }.logo-corner.hidden{ display: none !important; }#touch-layer{ position: fixed; inset: 0; z-index: 10; touch-action: none; user-select: none; -webkit-user-select: none; }#touch-layer.hidden{ display: none; }#joy-float{ position: absolute; width: 0; height: 0; pointer-events: none; z-index: 11; }#joy-float.hidden{ display: none; }#joy-float-base{
+    position: absolute; left: 50%; top: 50%;
+    width: 128px; height: 128px; margin: -64px 0 0 -64px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(63,71,184,.30) 0%, rgba(18,22,63,.42) 68%, rgba(18,22,63,0) 100%);
+    border: 2px solid rgba(247,182,0,.35);
+    box-shadow: inset 0 0 24px rgba(0,0,0,.35);
+    transition: border-color .12s ease, transform .12s ease;
+}#joy-float-base.active{ border-color: rgba(247,182,0,.75); transform: scale(1.04); }#joy-float-knob{
+    position: absolute; left: 50%; top: 50%;
+    width: 58px; height: 58px; transform: translate(-50%, -50%); border-radius: 50%;
+    background: linear-gradient(180deg, var(--gold-lt), var(--gold));
+    box-shadow: 0 6px 18px rgba(0,0,0,.55), 0 0 0 3px rgba(10,13,51,.5);
+}#joy-float.appearing #joy-float-base{ animation: joyIn .16s ease-out; }@keyframes joyIn { from { transform: scale(.72); opacity: 0; } to { transform: scale(1); opacity: 1; } }#touch-hint{
+    position: fixed; left: 50%; bottom: max(28px, env(safe-area-inset-bottom));
+    transform: translateX(-50%); z-index: 12;
+    padding: 9px 18px; border-radius: 999px;
+    background: rgba(10,13,51,.86); border: 1px solid var(--border);
+    color: var(--muted); font-size: 13px; pointer-events: none;
+    max-width: 90vw; text-align: center; transition: opacity .5s ease;
+}#touch-hint.hidden{ display: none; }#touch-hint.fade{ opacity: 0; }#power-bars{
+    position: absolute; left: 10px; bottom: 10px; z-index: 4;
+    display: flex; flex-direction: column; gap: 6px; pointer-events: none;
+}#power-bars.hidden{ display: none; }.power-bar{
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 10px 5px 8px; border-radius: 999px;
+    background: rgba(10,13,51,.8); animation: joyIn .28s ease-out;
+}.power-bar.hidden{ display: none; }.power-label{ font-size: 10px; font-weight: 900; letter-spacing: .05em; }.power-track{ width: 66px; height: 5px; border-radius: 999px; overflow: hidden; }.power-track > div{ height: 100%; transform-origin: left center; }.power-bar.is-boost{ border: 1px solid var(--gold); }.power-bar.is-boost .power-label{ color: var(--gold); }.power-bar.is-boost .power-track{ background: rgba(247,182,0,.2); }#boost-fill{ background: linear-gradient(90deg, var(--gold-lt), var(--gold)); }.power-bar.is-slow{ border: 1px solid var(--slow); }.power-bar.is-slow .power-label{ color: var(--slow); }.power-bar.is-slow .power-track{ background: rgba(144,202,249,.2); }#slow-fill{ background: linear-gradient(90deg, #E3F2FD, var(--slow)); }#countdown{
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    z-index: 6; pointer-events: none; background: rgba(7,10,38,.5); backdrop-filter: blur(2px);
+}#countdown.hidden{ display: none; }#countdown-value{
+    font-size: clamp(64px, 22vw, 140px); font-weight: 900; line-height: 1; color: var(--text);
+    text-shadow: 0 0 30px rgba(63,71,184,.7), 0 6px 18px rgba(0,0,0,.6);
+}#countdown-value.go{
+    font-size: clamp(38px, 13vw, 88px); color: var(--gold);
+    text-shadow: 0 0 34px rgba(247,182,0,.6), 0 6px 18px rgba(0,0,0,.6);
+}#countdown-value.tick{ animation: countPop .62s cubic-bezier(.2,.9,.25,1); }@keyframes countPop {
+    0%   { transform: scale(.35); opacity: 0; }
+    35%  { transform: scale(1.12); opacity: 1; }
+    55%  { transform: scale(1); opacity: 1; }
+    100% { transform: scale(.86); opacity: .12; }
+}.btn-back-game{
+    position: fixed;
+    top: max(16px, env(safe-area-inset-top));
+    left: max(16px, env(safe-area-inset-left));
+    z-index: 25;
+    display: flex; align-items: center; justify-content: center;
+    width: clamp(44px, 6vw, 84px); height: clamp(44px, 6vw, 84px);
+    margin: 0; padding: 0; border-radius: 50%;
+    background: rgba(10,13,51,.82); border: 1px solid var(--border);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    cursor: pointer; touch-action: manipulation;
+}.btn-back-game:hover{ background: rgba(37,44,107,.9); border-color: var(--gold); }body.modal-open .btn-back-game{ display: none; }body[data-screen]:not([data-screen="game"]) .btn-back-game{ display: none; }body[data-screen="game"] .btn-back-game{ display: flex; }@media (max-width: 620px){
+#app{ padding-left: 8px; padding-right: 8px; }#stage{ max-width: min(100%, calc(100vh - 175px)); border-radius: 14px; }.hud-value{ font-size: 18px; }
+}
+@media (max-height: 620px){
+#stage{ max-width: min(100%, calc(100vh - 132px)); }.thumb-label{ display: none; }
+}
+@media (pointer: fine){
+#thumb-zone{ display: none !important; }#stage{ max-width: min(100%, calc(100vh - 140px), 620px); }
+}
+@media (orientation: portrait) and (min-width: 700px){
+.btn-back-game{ top: 3vh; left: 3vw; width: 7vw; height: 7vw; }#hud{ padding-left: 9vw; padding-right: 9vw; }.hud-label{ font-size: 1.5vw; }.hud-value{ font-size: 4.4vw; }.life{ width: 1.1vw; height: 1.1vw; }#banner{ font-size: 2.6vw; padding: 1.4vh 3vw; }
+}
+@media (orientation: landscape) and (min-width: 820px){
+#hud{ padding-left: 0; padding-right: 0; }#thumb-zone{ display: none !important; }.btn-back-game{ top: 2.5vh; left: 1.8vw; width: 6vh; height: 6vh; }#banner{ font-size: 2.4vh; padding: 1vh 2vw; }
+}
+.hud-lives .hud-value{ display: flex; gap: 4px; justify-content: center; align-items: center; height: 26px; }.life{
+    display: inline-block; width: 11px; height: 11px; border-radius: 50%;
+    background: linear-gradient(180deg, var(--gold-lt), var(--gold));
+    box-shadow: 0 0 8px rgba(247,182,0,.5);
+}.no-life{ color: var(--danger); font-size: 18px; }#banner{
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 5; pointer-events: none;
+    padding: 10px 22px; border-radius: 12px; background: rgba(7,10,38,.88);
+    font-size: 22px; font-weight: 900; letter-spacing: .08em;
+    animation: bannerIn .25s ease-out;
+}#banner.hidden{ display: none; }#banner.lose{ color: var(--danger); border: 1px solid var(--danger); }#banner.win{ color: var(--win); border: 1px solid var(--win); }@keyframes bannerIn {
+    from { transform: translate(-50%, -50%) scale(.8); opacity: 0; }
+    to   { transform: translate(-50%, -50%) scale(1);  opacity: 1; }
+}.token-dot{ width: 28px; height: 28px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }.token-dot::after{
+    content: ""; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--gold); box-shadow: 0 0 8px rgba(247,182,0,.6);
+}@media (orientation: portrait) and (min-width: 700px){
+.token-dot{ width: 5.4vw; height: 5.4vw; }.token-dot::after{ width: 1.6vw; height: 1.6vw; }
+}
+@media (prefers-reduced-motion: reduce){
+#countdown-value.tick, .hud-value.bump, .power-bar, #banner{ animation: none; }
+}
+
+
+
+
+/* =============================================================
+   MAZE GAME ONLY - Delivery Rush visual alignment
+   Does not style shared non-game screens.
+   ============================================================= */
+body[data-screen="game"] {
+    background: #090d31 url("../images/game-bg.jpg") center bottom / cover no-repeat fixed;
+}
+body[data-screen="game"] #app,
+body[data-screen="game"] #play-block { background: transparent; }
+body[data-screen="game"] #stage {
+    background: rgba(7,10,38,.48);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+}
+
+/* Only the gameplay back button. Shared .screen .btn-back stays in style-common.css. */
+body[data-screen="game"] .btn-back-game {
+    --bb: clamp(48px, 5.2vw, 80px);
+    position: fixed; top: max(16px, env(safe-area-inset-top)); left: max(16px, env(safe-area-inset-left));
+    z-index: 25; display: flex; align-items: center; justify-content: center;
+    width: var(--bb); height: calc(var(--bb) * .96); margin: 0; padding: 0;
+    border: 0; border-radius: 0;
+    background: url("../images/btn-back.png") center / 100% 100% no-repeat;
+    image-rendering: pixelated; box-shadow: none;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,.45));
+}
+body[data-screen="game"] .btn-back-game .btn-back-ico {
+    width: 46%; height: 46%; font-size: 0; color: transparent; background: #eef1ff;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9' shape-rendering='crispEdges'%3E%3Cpath d='M3 1h1v1H3zM2 2h1v1H2zM1 3h1v1H1zM0 4h9v1H0zM1 5h1v1H1zM2 6h1v1H2zM3 7h1v1H3zM4 0h1v1H4zM4 8h1v1H4z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9' shape-rendering='crispEdges'%3E%3Cpath d='M3 1h1v1H3zM2 2h1v1H2zM1 3h1v1H1zM0 4h9v1H0zM1 5h1v1H1zM2 6h1v1H2zM3 7h1v1H3zM4 0h1v1H4zM4 8h1v1H4z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Countdown typography and animation equivalent to Delivery Rush. */
+#countdown { position: absolute; inset: 0; z-index: 12; display: grid; place-items: center; pointer-events: none; }
+#countdown.hidden { display: none; }
+#countdown-value {
+    font-family: "PixelPL", "PressStart2P", monospace;
+    font-size: clamp(52px, 16cqw, 126px); line-height: 1;
+    color: #ffc22e; text-shadow: .07em .07em 0 #502900, 0 0 28px rgba(247,182,0,.65);
+}
+#countdown-value.go { font-size: clamp(34px, 10cqw, 82px); white-space: nowrap; }
+#countdown-value.tick { animation: countPop .62s cubic-bezier(.2,.9,.25,1); }
+
+/* Progress bars live below the board, not over the board. */
+#play-block > #power-bars {
+    position: relative; inset: auto; transform: none;
+    width: min(100%, 620px); margin: 10px auto 0; padding: 0;
+    display: flex; flex-direction: column; gap: 7px; z-index: 2;
+}
+#play-block > #power-bars.hidden { display: none; }
+#play-block > #power-bars .power-bar {
+    display: grid; grid-template-columns: minmax(110px, auto) 1fr; align-items: center; gap: 12px;
+    width: 100%; padding: 9px 14px; border-radius: 999px;
+    background: rgba(7,10,38,.94); box-shadow: 0 4px 14px rgba(0,0,0,.4);
+}
+#play-block > #power-bars .power-bar.hidden { display: none; }
+#play-block > #power-bars .power-label { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+#play-block > #power-bars .power-logo { display: block; height: 18px; width: auto; max-width: 58px; }
+#play-block > #power-bars .power-track { width: 100%; height: 9px; border-radius: 999px; overflow: hidden; }
+#play-block > #power-bars .power-track > div { height: 100%; transform-origin: left center; }
+#touch-hint.is-dim { opacity: .45; }
+
+/* vNext: lock gameplay viewport and keep effect state unmistakably visible */
+html:has(body[data-screen="game"]),
+body[data-screen="game"] { width: 100%; height: 100%; overflow: hidden !important; overscroll-behavior: none; }
+body[data-screen="game"] #app { position: fixed; inset: 0; overflow: hidden; touch-action: none; }
+body[data-screen="game"] #play-block { position: relative; max-height: 100%; }
+body[data-screen="game"] #stage { max-width: min(100%, calc(100dvh - 210px), 620px); }
+
+/* Bars are visually below the board but do not enlarge/scroll the page. */
+body[data-screen="game"] #play-block > #power-bars {
+    position: absolute; top: calc(100% + 8px); left: 50%; bottom: auto; right: auto;
+    transform: translateX(-50%); width: min(100%, 620px); margin: 0;
+}
+body[data-screen="game"] #play-block:has(#power-bars:not(.hidden)) {
+    transform: translateY(-28px);
+}
+body[data-screen="game"] #boost-bar {
+    border: 2px solid #f7b600; box-shadow: 0 0 18px rgba(247,182,0,.34), 0 4px 14px rgba(0,0,0,.45);
+}
+body[data-screen="game"] #slow-bar {
+    border: 2px solid #90caf9; box-shadow: 0 0 18px rgba(144,202,249,.32), 0 4px 14px rgba(0,0,0,.45);
+}
+body[data-screen="game"] #boost-bar .power-label { color: #ffc22e; }
+body[data-screen="game"] #slow-bar .power-label { color: #90caf9; }
+body[data-screen="game"].is-visa-boost #score {
+    color: #ffc22e; text-shadow: 0 0 12px rgba(247,182,0,.7);
+}
+
+/* FINAL STABILITY FIX: stage never changes position when power bars appear */
+body[data-screen="game"] #play-block {
+    transform: none !important;
+    display: grid;
+    grid-template-rows: auto auto 58px;
+    align-content: center;
+    gap: 10px;
+}
+body[data-screen="game"] #play-block > #power-bars,
+body[data-screen="game"] #play-block > #power-bars.hidden {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    width: 100%; height: 58px; min-height: 58px;
+    margin: 0 auto !important;
+}
+body[data-screen="game"] #play-block > #power-bars.hidden {
+    display: flex !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+body[data-screen="game"] #play-block > #power-bars:not(.hidden) {
+    visibility: visible;
+}
+
+/* Countdown must not dim or blur the board */
+body[data-screen="game"] #countdown {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* =============================================================
+   POWER BAR FINAL MATCH - compact like Delivery Rush
+   Fixed reserved slot means the board never moves.
+   ============================================================= */
+body[data-screen="game"] #play-block {
+    grid-template-rows: auto auto 48px !important;
+}
+body[data-screen="game"] #play-block > #power-bars,
+body[data-screen="game"] #play-block > #power-bars.hidden {
+    width: min(210px, 72vw) !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    justify-self: center;
+    align-self: start;
+    gap: 5px !important;
+}
+body[data-screen="game"] #play-block > #power-bars .power-bar {
+    grid-template-columns: auto 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-height: 38px;
+    padding: 6px 10px !important;
+    border-radius: 13px !important;
+}
+body[data-screen="game"] #play-block > #power-bars .power-label {
+    min-width: 58px;
+    justify-content: flex-start;
+    font-family: "PixelPL", "PressStart2P", monospace;
+    font-size: 9px !important;
+    letter-spacing: 0;
+}
+body[data-screen="game"] #play-block > #power-bars .power-logo {
+    height: 13px !important;
+    max-width: 38px !important;
+}
+body[data-screen="game"] #play-block > #power-bars .power-track {
+    height: 8px !important;
+    min-width: 92px;
+    background: rgba(255,255,255,.12);
+}
+body[data-screen="game"] #boost-fill {
+    background: linear-gradient(90deg, #ffe171, #f7b600) !important;
+}
+body[data-screen="game"] #slow-fill {
+    background: linear-gradient(90deg, #dff3ff, #64b5f6) !important;
+}
+
+/* Keep the HUD and touch area distinct from the decorative city backdrop. */
+body[data-screen="game"] #hud .hud-item {
+    background: linear-gradient(180deg, rgba(18, 25, 71, .98), rgba(7, 11, 39, .98));
+    border-color: rgba(133, 155, 255, .72);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .38), inset 0 1px rgba(255, 255, 255, .08);
+}
+body[data-screen="game"] #stage {
+    background: #0a1232;
+    border-color: #91a6ff;
+    box-shadow: 0 0 0 1px rgba(9, 14, 49, .9), 0 12px 32px rgba(0, 0, 0, .62);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+body[data-screen="game"] #thumb-zone {
+    flex: 0 1 clamp(112px, 19vh, 150px);
+    width: min(100%, 620px);
+    min-height: 112px;
+    max-height: 22vh;
+    margin: 8px auto 0;
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid rgba(139, 163, 255, .68);
+    border-radius: 18px;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(74, 99, 202, .28), transparent 70%),
+        linear-gradient(180deg, rgba(10, 16, 54, .96), rgba(6, 10, 35, .96));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .38), inset 0 0 0 1px rgba(255, 255, 255, .05);
+    display: flex;
+}
+body[data-screen="game"] #thumb-zone.hidden {
+    display: flex !important;
+    visibility: hidden;
+    opacity: 0;
+}
+body[data-screen="game"] #thumb-zone .thumb-label {
+    color: #c5d0ff;
+    font-family: "PixelPL", "PressStart2P", monospace;
+    font-size: clamp(9px, 2.5vw, 11px);
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+}
+body[data-screen="game"] #touch-hint {
+    bottom: max(18px, env(safe-area-inset-bottom));
+    padding: 0 14px;
+    border: 0;
+    background: transparent;
+    color: #f0f2ff;
+    font-size: clamp(12px, 3.4vw, 15px);
+    font-weight: 700;
+    line-height: 1.4;
+    text-shadow: 0 2px 8px #050821, 0 0 14px rgba(121, 147, 255, .4);
+}
+@media (pointer: fine), (orientation: landscape) and (max-height: 520px) {
+    body[data-screen="game"] #thumb-zone {
+        display: none !important;
+    }
+}
+@media (max-height: 520px) and (orientation: portrait) {
+    body[data-screen="game"] #thumb-zone {
+        flex-basis: 88px;
+        min-height: 88px;
+        padding: 8px 12px;
+    }
+    body[data-screen="game"] #thumb-zone .thumb-label {
+        font-size: 9px;
+    }
+}
+
+/* =============================================================
+   MAZE v4 - UKLAD EKRANU GRY 1:1 JAK DELIVERY RUSH
+   portrait: [strzalka][HUD] w jednym rzedzie, plansza, paski, strefa kciuka na dole
+   landscape: HUD nad plansza na szerokosc planszy, paski pod plansza
+   ============================================================= */
+body[data-screen="game"] #play-block {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center;
+    gap: 0 !important;
+    transform: none !important;
+}
+body[data-screen="game"] #stage { aspect-ratio: 1 / 1; flex: 0 0 auto; }
+
+/* paski Visa/Slow - zawsze zarezerwowane miejsce pod plansza (plansza sie nie rusza) */
+body[data-screen="game"] #play-block > #power-bars,
+body[data-screen="game"] #play-block > #power-bars.hidden {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    width: min(210px, 72vw) !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    margin: 12px auto 0 !important;
+}
+
+/* ---------- PORTRAIT (telefon / tablet pionowo) ---------- */
+@media (orientation: portrait) {
+    body[data-screen="game"] {
+        --portrait-top: max(12px, env(safe-area-inset-top));
+        --portrait-edge: clamp(8px, 2.5vw, 28px);
+        --portrait-head: clamp(48px, 7vw, 80px);
+        --portrait-gap: 10px;
+        --portrait-board: min(
+            calc(100vw - 2 * var(--portrait-edge)),
+            calc(100dvh - var(--portrait-top) - var(--portrait-head) - 218px)
+        );
+    }
+    body[data-screen="game"] #app {
+        height: 100dvh;
+        padding: calc(var(--portrait-top) + var(--portrait-head) + var(--portrait-gap))
+                 var(--portrait-edge) 0 !important;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    body[data-screen="game"] #play-block {
+        width: var(--portrait-board) !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+    body[data-screen="game"] #hud {
+        position: fixed;
+        top: var(--portrait-top);
+        left: calc(var(--portrait-edge) + var(--portrait-head) + var(--portrait-gap));
+        right: var(--portrait-edge);
+        width: auto;
+        height: var(--portrait-head);
+        padding: 0 !important;
+        gap: var(--portrait-gap);
+        z-index: 3;
+    }
+    body[data-screen="game"] #hud .hud-item {
+        display: flex; flex-direction: column; justify-content: center;
+        padding: 4px 8px; border-radius: 12px;
+    }
+    body[data-screen="game"] #hud .hud-label { font-size: clamp(10px, 1.5vw, 18px); }
+    body[data-screen="game"] #hud .hud-value { font-size: clamp(20px, 3vw, 38px); line-height: 1.1; }
+    body[data-screen="game"] .btn-back-game {
+        top: var(--portrait-top) !important;
+        left: var(--portrait-edge) !important;
+        width: var(--portrait-head) !important;
+        height: var(--portrait-head) !important;
+    }
+    body[data-screen="game"] #stage {
+        width: var(--portrait-board) !important;
+        height: var(--portrait-board) !important;
+        max-width: none !important;
+        border-radius: 14px;
+    }
+    body[data-screen="game"] #thumb-zone {
+        position: fixed;
+        left: var(--portrait-edge); right: var(--portrait-edge);
+        bottom: max(12px, env(safe-area-inset-bottom));
+        width: auto; max-width: none;
+        height: max(110px, calc(100dvh - var(--portrait-top) - var(--portrait-head)
+                 - var(--portrait-gap) - var(--portrait-board) - 112px
+                 - max(12px, env(safe-area-inset-bottom))));
+        min-height: 0; max-height: none;
+        margin: 0; flex: 0 0 auto;
+        border-radius: 12px; z-index: 8;
+    }
+}
+
+/* ---------- LANDSCAPE desktop / kiosk ---------- */
+@media (orientation: landscape) and (min-width: 820px) {
+    body[data-screen="game"] {
+        --desktop-board: min(74vh, calc(100vw - 48px), calc(100dvh - 210px));
+    }
+    body[data-screen="game"] #app {
+        height: 100dvh;
+        padding: 16px 24px 12px !important;
+        justify-content: center;
+    }
+    body[data-screen="game"] #play-block {
+        position: relative;
+        width: var(--desktop-board) !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding-top: 72px;
+    }
+    body[data-screen="game"] #hud {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 60px;
+        padding: 0 !important; gap: 10px; z-index: 3;
+    }
+    body[data-screen="game"] #hud .hud-item {
+        display: flex; flex-direction: column; justify-content: center; padding: 4px 10px;
+    }
+    body[data-screen="game"] #hud .hud-label { font-size: 13px; color: #d5dcff; }
+    body[data-screen="game"] #hud .hud-value { font-size: 32px; line-height: 1.1; }
+    body[data-screen="game"] #stage {
+        width: var(--desktop-board) !important;
+        height: var(--desktop-board) !important;
+        max-width: none !important;
+        border-radius: 14px;
+    }
+}
+
+/* desktop: niewidoczna strefa kciuka nie zajmuje miejsca */
+@media (pointer: fine), (orientation: landscape) {
+    body[data-screen="game"] #thumb-zone,
+    body[data-screen="game"] #thumb-zone.hidden { display: none !important; }
+}
+
+/* HOME: tlo Maze bez efektow DR, zawsze cover */
+#screen-home .home-scene {
+    left: 50%; top: 50%;
+    width: max(100vw, calc(100vh * 2048 / 1143));
+    width: max(100cqw, calc(100cqh * 2048 / 1143));
+    height: auto; aspect-ratio: 2048 / 1143;
+    transform: translate(-50%, -50%);
+    background: url("../images/home-bg.jpg") center / 100% 100% no-repeat;
+}
+
+/* =============================================================
+   MAZE v5 - STREFA STEROWANIA 1:1 JAK DELIVERY RUSH
+   przerywana ramka, przezroczyste tlo (widac miasto), napis u gory,
+   podpowiedz w ciemnej plakietce zaraz pod napisem
+   ============================================================= */
+@media (orientation: portrait) {
+    body[data-screen="game"] {
+        --thumb-bottom: max(12px, env(safe-area-inset-bottom));
+        --thumb-h: max(110px, calc(100dvh - var(--portrait-top) - var(--portrait-head)
+                   - var(--portrait-gap) - var(--portrait-board) - 112px - var(--thumb-bottom)));
+    }
+    body[data-screen="game"] #thumb-zone {
+        height: var(--thumb-h);
+        bottom: var(--thumb-bottom);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0;
+        padding: 18px 12px;
+        border: 2px dashed rgba(145, 155, 255, .48);
+        border-radius: 12px;
+        background: rgba(10, 13, 51, .52);
+        box-shadow: none;
+    }
+    body[data-screen="game"] #thumb-zone .thumb-label {
+        display: block;
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: clamp(13px, 2vw, 22px);
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: #eef1ff;
+        text-shadow: 0 2px 5px #070a26;
+    }
+    /* podpowiedz w srodku strefy, pod napisem */
+    body[data-screen="game"] #touch-hint {
+        top: calc(100dvh - var(--thumb-bottom) - var(--thumb-h) + 54px);
+        bottom: auto;
+        max-width: calc(100vw - 2 * var(--portrait-edge) - 40px);
+        padding: 6px 14px;
+        border: 0;
+        border-radius: 4px;
+        background: rgba(10, 13, 51, .9);
+        font-family: "Inter", system-ui, sans-serif;
+        font-size: clamp(14px, 2vw, 22px);
+        font-weight: 600;
+        line-height: 1.4;
+        color: #fff;
+        text-shadow: none;
+    }
+    body[data-screen="game"] #touch-hint.is-dim { opacity: 1; }
+}
+
+/* =============================================================
+   MAZE v6 - VISA x2 / SLOW - komunikacja i paski jak w Delivery Rush
+   ============================================================= */
+#stage { container-type: inline-size; }
+
+/* pop-up na srodku planszy (= #visa-pop z DR) */
+.mz-pop {
+    position: absolute; inset: 0; z-index: 7;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    pointer-events: none; opacity: 0;
+}
+.mz-pop.is-boost { background: radial-gradient(circle at 50% 50%, rgba(26,31,113,.62) 0%, rgba(7,10,38,0) 62%); }
+.mz-pop.is-slow  { background: radial-gradient(circle at 50% 50%, rgba(20,60,110,.55) 0%, rgba(7,10,38,0) 62%); }
+.mz-pop.show { animation: mzPop 1.2s cubic-bezier(.2,.9,.25,1) forwards; }
+.mz-pop img { display: block; height: auto; }
+.mz-pop.is-boost img {
+    width: 36%; max-width: 230px;
+    filter: drop-shadow(0 0 18px rgba(247,182,0,.55)) drop-shadow(0 4px 10px rgba(0,0,0,.7));
+}
+.mz-pop.is-slow img {
+    width: 18%; max-width: 110px; image-rendering: pixelated;
+    filter: drop-shadow(0 0 18px rgba(144,202,249,.6)) drop-shadow(0 4px 10px rgba(0,0,0,.7));
+}
+.mz-pop span {
+    font-family: "PixelPL", "PressStart2P", monospace;
+    font-size: clamp(14px, 5cqw, 34px); line-height: 1.2; white-space: nowrap;
+}
+.mz-pop.is-boost span { color: #FFC22E; text-shadow: .08em .08em 0 #2b1600, 0 0 24px rgba(247,182,0,.6); }
+.mz-pop.is-slow span  { color: #90CAFF; text-shadow: .08em .08em 0 #0b2340, 0 0 24px rgba(144,202,249,.6); }
+@keyframes mzPop {
+    0%   { opacity: 0; transform: scale(.4); }
+    18%  { opacity: 1; transform: scale(1.12); }
+    30%  { opacity: 1; transform: scale(1); }
+    75%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(.94) translateY(-6%); }
+}
+
+/* swiecacy wynik przez caly czas x2 */
+body.is-visa-boost #score { color: #FFC22E !important; text-shadow: 0 0 12px rgba(247,182,0,.65); }
+body.is-visa-boost #hud .hud-item:has(#score) {
+    border-color: rgba(247,182,0,.8) !important;
+    box-shadow: 0 0 18px rgba(247,182,0,.35) !important;
+}
+
+/* paski: jeden rzad, wysrodkowane pod plansza, 40px, radius 10px (wymiary z DR) */
+body[data-screen="game"] #play-block > #power-bars,
+body[data-screen="game"] #play-block > #power-bars.hidden {
+    position: relative !important; inset: auto !important; transform: none !important;
+    display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;
+    justify-content: center !important; align-items: center !important; gap: 10px !important;
+    width: 100% !important; height: 40px !important; min-height: 40px !important;
+    margin: 12px auto 0 !important; padding: 0 !important;
+}
+body[data-screen="game"] #play-block > #power-bars.hidden { visibility: hidden; }
+body[data-screen="game"] #play-block > #power-bars .power-bar {
+    display: flex !important; align-items: center !important; gap: 8px !important;
+    flex: 0 0 min(210px, calc((100% - 10px) / 2)) !important;
+    width: min(210px, calc((100% - 10px) / 2)) !important;
+    height: 40px !important; min-height: 0 !important;
+    padding: 6px 10px !important; border-radius: 10px !important;
+    background: rgba(12,15,52,.94) !important;
+}
+body[data-screen="game"] #play-block > #power-bars .power-bar.hidden { display: none !important; }
+body[data-screen="game"] #play-block > #power-bars .power-label {
+    display: inline-flex; align-items: center; gap: .4em; min-width: 0 !important; white-space: nowrap;
+    font-family: "Inter", system-ui, sans-serif !important; font-size: 12px !important;
+    font-weight: 900; letter-spacing: .04em;
+}
+body[data-screen="game"] #play-block > #power-bars .power-logo {
+    display: block; height: 13px !important; width: auto; max-width: 40px !important;
+}
+body[data-screen="game"] #play-block > #power-bars .power-track {
+    flex: 1 1 auto; min-width: 0 !important; width: auto !important;
+    height: 7px !important; border-radius: 999px; overflow: hidden;
+}
+body[data-screen="game"] #boost-bar { border: 1px solid #f7b600 !important; box-shadow: 0 0 14px rgba(247,182,0,.3) !important; }
+body[data-screen="game"] #boost-bar .power-label { color: #ffc22e; }
+body[data-screen="game"] #boost-bar .power-track { background: rgba(247,182,0,.2) !important; }
+body[data-screen="game"] #slow-bar { border: 1px solid #90caf9 !important; box-shadow: 0 0 14px rgba(144,202,249,.28) !important; }
+body[data-screen="game"] #slow-bar .power-label { color: #90caf9; }
+body[data-screen="game"] #slow-bar .power-track { background: rgba(144,202,249,.2) !important; }
+@media (orientation: portrait) {
+    body[data-screen="game"] #play-block > #power-bars .power-label { font-size: clamp(11px, 1.5vw, 18px) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mz-pop.show { animation-duration: .01s; animation-delay: 1s; }
+}
+
+/* ZASADY GRY - legenda: Visa "x2" + podpis "scigasz drony" pod spodem */
+#legend li.mz-visa-legend b {
+    display: flex; flex-direction: column; align-items: center;
+    color: #FFC22E; line-height: 1.1;
+}
+#legend li.mz-visa-legend b small {
+    display: block; margin-top: 2px;
+    font-size: .62em; font-weight: 700; letter-spacing: .02em;
+    color: #FFC22E; white-space: nowrap; opacity: .9;
+}
+
+/* ZASADY GRY - token w legendzie: sama lupa + "+1", bez starej kropki */
+#legend li.mz-token-legend::before,
+#legend li.mz-token-legend::after { content: none !important; display: none !important; }
+
+/* =============================================================
+   MAZE v10 - "LABIRYNT CZYSTY!" w stylu popa Visa x2
+   trwa cala pauze (--clear-ms), bez skakania i bez nakladania na "+500"
+   ============================================================= */
+.mz-pop.is-clear {
+    gap: 10px;
+    background: radial-gradient(circle at 50% 50%, rgba(26,31,113,.72) 0%, rgba(7,10,38,0) 66%);
+}
+.mz-pop.is-clear.show { animation: mzClear var(--clear-ms, 1800ms) ease-out forwards; }
+.mz-pop.is-clear span {
+    color: #FFC22E;
+    font-size: clamp(14px, 6cqw, 40px);
+    text-shadow: .08em .08em 0 #2b1600, 0 0 24px rgba(247,182,0,.6);
+}
+.mz-pop.is-clear b {
+    font-family: "PixelPL", "PressStart2P", monospace;
+    font-weight: 400;
+    font-size: clamp(12px, 4.2cqw, 28px);
+    color: #fff;
+    text-shadow: .08em .08em 0 #070a26;
+}
+@keyframes mzClear {
+    0%   { opacity: 0; transform: scale(.5); }
+    12%  { opacity: 1; transform: scale(1.1); }
+    22%  { opacity: 1; transform: scale(1); }
+    85%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mz-pop.is-clear.show { animation: none; opacity: 1; }
+}
+
+/* =============================================================
+   MAZE - HOME: dlugi tytul "Cyber Detective" zawsze miesci sie na ekranie
+   PressStart2P: 1 znak = 1em -> rozmiar liczony od liczby znakow.
+   "body" w selektorze = wygrywa z regulami media w style-common.css
+   ============================================================= */
+/* pion (telefon i tablet): 2 linie CYBER / DETECTIVE (najdluzsze slowo = 9 znakow) */
+@media (orientation: portrait) {
+    body #screen-home .home-title {
+        max-width: 100%;
+        white-space: normal !important;
+        text-wrap: balance;
+        overflow-wrap: normal;
+        font-size: min(calc(var(--u) * 3.6), 9vw) !important;
+        line-height: 1.25;
+    }
+}
+@media (orientation: portrait) and (min-width: 700px) {
+    body #screen-home .home-title {
+        font-size: min(calc(var(--u) * 8), 8.6vw) !important;
+    }
+}
+/* poziom: jedna linia, nigdy szersza niz ekran (15 znakow + zapas) */
+@media (orientation: landscape) {
+    body #screen-home .home-title {
+        white-space: nowrap !important;
+        font-size: min(4.3vh, 5.9vw) !important;
+    }
+}
+
+/* "POZIOM X ZAKONCZONY!" - dluzszy napis: zawijanie zamiast wychodzenia poza plansze */
+.mz-pop.is-clear span {
+    white-space: normal;
+    text-align: center;
+    max-width: 90%;
+    font-size: clamp(14px, 5.2cqw, 36px);
+    line-height: 1.35;
+    text-wrap: balance;
+}
+
+
+
+#maze-city-fx{display:none;position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+body[data-screen="game"] #maze-city-fx{display:block;}
+body[data-screen="game"] #app{z-index:1;background:transparent!important;}
+#maze-city-fx .maze-city-scene{position:absolute;left:50%;bottom:0;width:max(100vw,calc(100vh * 2048 / 1130));aspect-ratio:2048 / 1130;transform:translateX(-50%);background:url("../images/game-bg.jpg") center / 100% 100% no-repeat;}
+
+#maze-city-fx .mz-png{position:absolute;display:block;pointer-events:none;opacity:0;background-repeat:no-repeat;background-size:100% 100%;image-rendering:pixelated;}
+
+#maze-city-fx .mzpng-window-left-off{left:38.378906%;top:66.725664%;width:1.513672%;height:4.159292%;background-image:url("../images/maze-window-left-off.png");animation:mzSignOff 4.61s ease-in-out infinite 0.0s;}
+
+#maze-city-fx .mzpng-window-left-glow{left:38.378906%;top:66.725664%;width:1.513672%;height:4.159292%;background-image:url("../images/maze-window-left-glow.png");animation:mzSignGlow 4.61s ease-in-out infinite 0.0s;}
+
+#maze-city-fx .mzpng-window-right-off{left:59.423828%;top:68.053097%;width:1.708984%;height:4.336283%;background-image:url("../images/maze-window-right-off.png");animation:mzSignOff 5.83s ease-in-out infinite -1.3s;}
+
+#maze-city-fx .mzpng-window-right-glow{left:59.423828%;top:68.053097%;width:1.708984%;height:4.336283%;background-image:url("../images/maze-window-right-glow.png");animation:mzSignGlow 5.83s ease-in-out infinite -1.3s;}
+
+@media(prefers-reduced-motion:reduce){#maze-city-fx .mz-png{animation:none!important;opacity:0!important;}}
+
+#maze-city-fx .mzpng-billboard-eye-off{left:62.744141%;top:59.026549%;width:5.322266%;height:3.805310%;background-image:url("../images/maze-billboard-eye-off.png");animation:mzSignOff 8.0s ease-in-out infinite -4.0s;}
+
+#maze-city-fx .mzpng-billboard-eye-glow{left:62.744141%;top:59.026549%;width:5.322266%;height:3.805310%;background-image:url("../images/maze-billboard-eye-glow.png");animation:mzSignGlow 8.0s ease-in-out infinite -4.0s;}
+
+#maze-city-fx .mzpng-sign-right-off{left:94.970703%;top:42.920354%;width:4.980469%;height:4.601770%;background-image:url("../images/maze-sign-right-off.png");animation:mzSignOff 8.6s ease-in-out infinite -4.800000000000001s;}
+
+#maze-city-fx .mzpng-sign-right-glow{left:94.970703%;top:42.920354%;width:4.980469%;height:4.601770%;background-image:url("../images/maze-sign-right-glow.png");animation:mzSignGlow 8.6s ease-in-out infinite -4.800000000000001s;}
+
+#maze-city-fx .mz-png[class$="-glow"]{filter:drop-shadow(0 0 3px rgba(150,220,255,.7));}
+@media(prefers-reduced-motion:reduce){#maze-city-fx .mz-png{animation:none!important;opacity:0!important;}}
+
+/* White/cyan light only: no darkening overlays. */
+
+#maze-city-fx .mz-png { mix-blend-mode:screen; }
+#maze-city-fx .mz-png[class$="-off"] {
+ filter:brightness(0) invert(1) drop-shadow(0 0 3px rgba(225,245,255,.85));
+}
+#maze-city-fx .mz-png[class$="-glow"] {
+ filter:brightness(0) saturate(100%) invert(78%) sepia(67%) saturate(1520%) hue-rotate(164deg) brightness(108%) contrast(104%) drop-shadow(0 0 4px rgba(45,190,255,.85));
+}

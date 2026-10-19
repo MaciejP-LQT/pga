@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#070a26">
+    <meta name="description" content="Visa Games — wybierz swoją grę.">
+    <title>Visa Games — Game Hub</title>
+    <link rel="preload" href="fonts/PressStart2P.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/Inter_24pt-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <main class="hub" aria-label="Wybór gry">
+        <div class="view-switch" role="group" aria-label="Widok huba">
+            <button type="button" data-view="cards" aria-label="Widok kart" aria-controls="cards-view" aria-pressed="true" title="Widok kart">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                <span></span>
+            </button>
+            <button type="button" data-view="carousel" aria-label="Widok karuzeli" aria-controls="carousel-view" aria-pressed="false" title="Widok karuzeli">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M2 8v8M22 8v8"/></svg>
+                <span></span>
+            </button>
+        </div>
+        <p class="eyebrow"><span aria-hidden="true">✦</span> VISA GAMES <span class="eyebrow-divider" aria-hidden="true">/</span> GAME HUB</p>
+        <section class="cards-view" id="cards-view" aria-labelledby="cards-title">
+            <h1 id="cards-title">Wybierz grę</h1>
+            <ul class="game-grid" id="game-grid"></ul>
+        </section>
+        <section class="carousel" id="carousel-view" aria-roledescription="karuzela" aria-label="Gry" hidden>
+            <div class="game-heading" aria-live="polite" aria-atomic="true">
+                <p class="game-counter" id="game-counter"></p>
+                <h1 id="game-title"></h1>
+            </div>
+            <div class="stage">
+                <button class="arrow arrow-prev" id="previous" type="button" aria-label="Poprzednia gra" aria-controls="game-track">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg>
+                </button>
+                <div class="viewport" id="game-viewport">
+                    <div class="track" id="game-track"></div>
+                </div>
+                <button class="arrow arrow-next" id="next" type="button" aria-label="Następna gra" aria-controls="game-track">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+            <p class="launch-hint" id="launch-hint" aria-live="polite"></p>
+            <nav class="thumbnails" id="thumbnails" aria-label="Wybierz grę"></nav>
+            <p class="controls-hint">Wybierz miniaturę <span aria-hidden="true">·</span> przesuń lub użyj strzałek / joysticka / krzyżaka</p>
+        </section>
+        <noscript><p class="noscript">Włącz JavaScript, aby wybrać grę.</p></noscript>
+    </main>
+</body>
+</html>

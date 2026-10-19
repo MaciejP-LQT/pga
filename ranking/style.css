@@ -1,0 +1,769 @@
+/* =========================================================
+   FONTY
+   ========================================================= */
+@font-face {
+    font-family: 'PressStart2P';
+    src: url('fonts/PressStart2P.woff2') format('woff2'),
+        url('fonts/PressStart2P.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter_24pt_SemiBold';
+    src: url('fonts/Inter_24pt-SemiBold.woff2') format('woff2'),
+        url('fonts/Inter_24pt-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter_24pt_Regular';
+    src: url('fonts/Inter_24pt-Regular.woff2') format('woff2'),
+        url('fonts/Inter_24pt-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter_24pt-Regular.woff2') format('woff2'),
+        url('fonts/Inter_24pt-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter_24pt-SemiBold.woff2') format('woff2'),
+        url('fonts/Inter_24pt-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* =========================================================
+   KOLORY & ZMIENNE
+   ========================================================= */
+:root {
+    --bg-dark: #020410;
+    --navy-panel: #070e2a;
+    --border-blue: rgba(45, 80, 175, 0.55);
+    --border-glow: #2979ff;
+
+    --gold: #f6be26;
+    --gold-dark: #cf8200;
+    --silver: #8cb1d8;
+    --bronze: #ca7c43;
+
+    --cyan-accent: #3b82f6;
+    --text-white: #ffffff;
+    --text-sub: #587bb8;
+
+    --font-pixel: 'PressStart2P', cursive, monospace;
+    --font-heading: 'Chakra Petch', 'Inter_24pt_SemiBold', 'Inter', -apple-system, sans-serif;
+    --font-body: 'Inter_24pt_Regular', 'Inter', -apple-system, sans-serif;
+    --font-body-bold: 'Inter_24pt_SemiBold', 'Inter', -apple-system, sans-serif;
+}
+
+/* =========================================================
+   RESET & BASE
+   ========================================================= */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    user-select: none;
+    -webkit-user-select: none;
+    background: var(--bg-dark);
+    color: var(--text-white);
+    font-family: var(--font-body);
+    font-weight: 400;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 50%, #060e2c 0%, #020410 100%);
+}
+
+/* =========================================================
+   MAIN APP CONTAINER
+   ========================================================= */
+#ranking-app {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    max-width: 1150px;
+    max-height: 570px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+
+/* =========================================================
+   RANKING SLIDES (ROTACJA)
+   ========================================================= */
+.ranking-slide {
+    position: absolute;
+    inset: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+.ranking-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@keyframes slideFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.985);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideFadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.985);
+    }
+}
+
+.ranking-slide.slide-enter {
+    animation: slideFadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.ranking-slide.slide-exit {
+    animation: slideFadeOut 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* =========================================================
+   PANEL — GŁÓWNA KARTA LEADERBOARDU
+   ========================================================= */
+.panel {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: radial-gradient(130% 120% at 50% 0%, #0e1d4b 0%, #070d28 55%, #020514 100%);
+    border: 2px solid var(--border-blue);
+    border-bottom: 2.5px solid var(--border-glow);
+    border-radius: 16px;
+    box-shadow:
+        0 0 50px rgba(6, 20, 75, 0.85),
+        0 24px 60px rgba(0, 0, 0, 0.8),
+        inset 0 0 35px rgba(18, 42, 110, 0.35),
+        0 8px 24px -6px rgba(41, 121, 255, 0.35);
+    padding: 24px 34px 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Subtelny wzór pikseli HUD w narożnikach */
+.panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 130px;
+    height: 95px;
+    background-image:
+        radial-gradient(circle, rgba(59, 130, 246, 0.25) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(59, 130, 246, 0.15) 1.5px, transparent 1.5px);
+    background-size: 14px 14px;
+    background-position: 0 0, 7px 7px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 130px;
+    height: 95px;
+    background-image:
+        radial-gradient(circle, rgba(59, 130, 246, 0.25) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(59, 130, 246, 0.15) 1.5px, transparent 1.5px);
+    background-size: 14px 14px;
+    background-position: 0 0, 7px 7px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* =========================================================
+   PANEL INNER (UKŁAD DWUKOLUMNOWY)
+   ========================================================= */
+.panel-inner {
+    display: grid;
+    grid-template-columns: 1.15fr 0.95fr;
+    gap: 32px;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* =========================================================
+   LEWA KOLUMNA: HEADER + PODIUM TOP 3
+   ========================================================= */
+.panel-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* HEADER: NAZWA GRY, RANKING, TAGLINE */
+.header-box {
+    margin-bottom: 16px;
+}
+
+.game-name {
+    font-family: var(--font-pixel);
+    font-size: clamp(26px, 3vw, 40px);
+    font-weight: 400;
+    font-style: normal;
+    text-transform: uppercase;
+    color: #ffffff;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    text-shadow:
+        0 4px 0 #16244d,
+        0 0 20px rgba(255, 255, 255, 0.4);
+    margin-bottom: 8px;
+}
+
+.ranking-title {
+    font-family: var(--font-pixel);
+    font-size: clamp(13px, 1.4vw, 18px);
+    color: #fdb813;
+    letter-spacing: 0.06em;
+    line-height: 1.25;
+    text-shadow:
+        0 2px 0 #8f5d00,
+        0 0 16px rgba(253, 184, 19, 0.35);
+    margin-bottom: 22px;
+}
+
+.ranking-tagline {
+    font-family: var(--font-body-bold);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-sub);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+/* PODIUM (MIEJSCA 1, 2, 3) */
+.podium-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.podium-card {
+    display: flex;
+    align-items: center;
+    height: 76px;
+    border-radius: 12px;
+    padding: 0 22px 0 16px;
+    position: relative;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease;
+}
+
+.podium-badge {
+    width: 66px;
+    height: 52px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+}
+
+.pixel-art-icon {
+    width: 60px;
+    height: 48px;
+    display: block;
+}
+
+/* NUMER POZYCJI (1, 2, 3) */
+.podium-pos {
+    flex: 0 0 auto;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-style: italic;
+    font-size: clamp(30px, 3.2vw, 42px);
+    line-height: 1;
+    margin-right: 6px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.podium-card-gold .podium-pos {
+    color: var(--gold);
+    text-shadow: 0 2px 0 #8c5d00, 0 0 18px rgba(246, 190, 38, 0.5);
+}
+
+.podium-card-silver .podium-pos {
+    color: var(--silver);
+    text-shadow: 0 2px 0 #3d5568, 0 0 14px rgba(140, 177, 216, 0.45);
+}
+
+.podium-card-bronze .podium-pos {
+    color: var(--bronze);
+    text-shadow: 0 2px 0 #5e2e0f, 0 0 14px rgba(202, 124, 67, 0.45);
+}
+
+.podium-nick {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-body-bold);
+    font-weight: 700;
+    font-size: clamp(20px, 2.2vw, 25px);
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.podium-score {
+    flex: 0 0 auto;
+    font-family: var(--font-pixel);
+    font-size: clamp(22px, 2.6vw, 30px);
+    letter-spacing: -0.02em;
+    text-align: right;
+    padding-left: 14px;
+}
+
+/* 1. MIEJSCE (ZŁOTO) */
+.podium-card-gold {
+    border: 2px solid var(--gold);
+    background: linear-gradient(90deg, rgba(246, 190, 38, 0.22) 0%, rgba(13, 23, 62, 0.88) 38%, rgba(8, 15, 45, 0.95) 100%);
+    box-shadow:
+        0 0 22px rgba(246, 190, 38, 0.42),
+        inset 0 0 14px rgba(246, 190, 38, 0.12);
+}
+
+.podium-card-gold .podium-score {
+    color: var(--gold);
+    text-shadow: 0 2px 0 #8c5d00, 0 0 16px rgba(246, 190, 38, 0.4);
+}
+
+/* 2. MIEJSCE (SREBRO) */
+.podium-card-silver {
+    border: 2px solid var(--silver);
+    background: linear-gradient(90deg, rgba(140, 177, 216, 0.18) 0%, rgba(13, 23, 62, 0.88) 38%, rgba(8, 15, 45, 0.95) 100%);
+    box-shadow:
+        0 0 18px rgba(140, 177, 216, 0.35),
+        inset 0 0 14px rgba(140, 177, 216, 0.1);
+}
+
+.podium-card-silver .podium-score {
+    color: #ffffff;
+    text-shadow: 0 2px 0 #52677d, 0 0 14px rgba(255, 255, 255, 0.25);
+}
+
+/* 3. MIEJSCE (BRĄZ) */
+.podium-card-bronze {
+    border: 2px solid var(--bronze);
+    background: linear-gradient(90deg, rgba(202, 124, 67, 0.2) 0%, rgba(13, 23, 62, 0.88) 38%, rgba(8, 15, 45, 0.95) 100%);
+    box-shadow:
+        0 0 18px rgba(202, 124, 67, 0.35),
+        inset 0 0 14px rgba(202, 124, 67, 0.1);
+}
+
+.podium-card-bronze .podium-score {
+    color: #e38e55;
+    text-shadow: 0 2px 0 #703a15, 0 0 14px rgba(227, 142, 85, 0.3);
+}
+
+/* =========================================================
+   PRAWA KOLUMNA: STATUS NA ŻYWO + MIEJSCA 4 - 10
+   ========================================================= */
+.panel-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+/* GAME-SPECIFIC BACKGROUND IMAGE */
+.game-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(1px) saturate(1.3);
+    -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 50%, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    mask-image: radial-gradient(ellipse 85% 80% at 50% 50%, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* STATUS HEADER */
+.status-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-bottom: 12px;
+    height: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px;
+    background: rgba(22, 6, 12, 0.88);
+    border: 1.5px solid #d32f2f;
+    border-radius: 999px;
+    box-shadow: 0 0 12px rgba(211, 47, 47, 0.35);
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff2222;
+    box-shadow: 0 0 8px #ff2222;
+    animation: livePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(0.85);
+    }
+}
+
+.live-text {
+    font-family: var(--font-body-bold);
+    font-weight: 800;
+    font-size: 12px;
+    color: #ff3b3b;
+    letter-spacing: 0.08em;
+}
+
+.refresh-badge {
+    font-family: var(--font-body-bold);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-sub);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* RANKS 4 - 10 */
+.ranks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    position: relative;
+    z-index: 1;
+}
+
+.rank-row {
+    display: flex;
+    align-items: center;
+    height: 41px;
+    padding: 0 16px;
+    background: rgba(8, 17, 50, 0.65);
+    border: 1px solid rgba(40, 72, 145, 0.5);
+    border-radius: 6px;
+    backdrop-filter: blur(6px);
+}
+
+.rank-num {
+    width: 36px;
+    flex: 0 0 auto;
+    font-family: var(--font-body-bold);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--cyan-accent);
+}
+
+.rank-nick {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 10px;
+}
+
+.rank-score {
+    flex: 0 0 auto;
+    font-family: var(--font-body-bold);
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+    text-align: right;
+}
+
+/* =========================================================
+   LOADING STATE
+   ========================================================= */
+.loading-msg {
+    font-family: var(--font-pixel);
+    font-size: 16px;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(246, 190, 38, 0.35);
+    letter-spacing: 0.05em;
+    text-align: center;
+}
+
+.loader-dots::after {
+    content: '';
+    animation: dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0% {
+        content: '';
+    }
+
+    25% {
+        content: '.';
+    }
+
+    50% {
+        content: '..';
+    }
+
+    75% {
+        content: '...';
+    }
+
+    100% {
+        content: '';
+    }
+}
+
+/* =========================================================
+   RESPONSYWNOŚĆ (DLA MNIEJSZYCH EKRANÓW / PIONOWYCH)
+   ========================================================= */
+@media (max-width: 860px) {
+
+    html,
+    body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    body {
+        display: block;
+        padding: 0;
+    }
+
+    #ranking-app {
+        width: 100%;
+        max-width: 480px;
+        height: auto;
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 12px 10px 24px;
+        display: block;
+        position: relative;
+    }
+
+    /* Ukrywanie nieaktywnych slajdów, aby nie zajmowały miejsca w pionie */
+    .ranking-slide {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        display: none;
+        opacity: 0;
+    }
+
+    .ranking-slide.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .ranking-slide.slide-exit {
+        display: flex;
+        position: absolute;
+        top: 12px;
+        left: 10px;
+        right: 10px;
+        width: calc(100% - 20px);
+        pointer-events: none;
+    }
+
+    .panel {
+        height: auto;
+        padding: 18px 14px 20px;
+        border-radius: 14px;
+    }
+
+    .panel-inner {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Header na mobile */
+    .header-box {
+        text-align: center;
+        margin-bottom: 14px;
+    }
+
+    .game-name {
+        font-size: clamp(18px, 5.5vw, 26px);
+        line-height: 1.35;
+        word-break: break-word;
+        text-align: center;
+        margin-bottom: 6px;
+    }
+
+    .ranking-title {
+        font-size: clamp(11px, 3vw, 15px);
+        text-align: center;
+        margin-bottom: 6px;
+    }
+
+    .ranking-tagline {
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-align: center;
+        margin-bottom: 12px;
+    }
+
+    /* Podium na mobile */
+    .podium-group {
+        gap: 10px;
+    }
+
+    .podium-card {
+        height: 64px;
+        padding: 0 14px 0 10px;
+    }
+
+    .podium-badge {
+        width: 48px;
+        height: 38px;
+        margin-right: 10px;
+    }
+
+    .pixel-art-icon {
+        width: 44px;
+        height: 34px;
+    }
+
+    .podium-pos {
+        font-size: clamp(22px, 5.5vw, 30px);
+        margin-right: 4px;
+    }
+
+    .podium-nick {
+        font-size: clamp(15px, 4.2vw, 19px);
+    }
+
+    .podium-score {
+        font-size: clamp(16px, 4.5vw, 22px);
+        padding-left: 8px;
+    }
+
+    /* Prawa kolumna / status */
+    .status-header {
+        justify-content: space-between;
+        margin-top: 6px;
+        margin-bottom: 10px;
+    }
+
+    .live-pill {
+        padding: 3px 10px;
+    }
+
+    .live-text {
+        font-size: 11px;
+    }
+
+    .refresh-badge {
+        font-size: 10px;
+        letter-spacing: 0.05em;
+    }
+
+    /* Lista 4-10 na mobile */
+    .ranks-list {
+        gap: 6px;
+    }
+
+    .rank-row {
+        height: 38px;
+        padding: 0 12px;
+    }
+
+    .rank-num {
+        width: 28px;
+        font-size: 14px;
+    }
+
+    .rank-nick {
+        font-size: 14px;
+        padding: 0 6px;
+    }
+
+    .rank-score {
+        font-size: 16px;
+    }
+}

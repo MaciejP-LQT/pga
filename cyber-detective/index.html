@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+
+<html lang="pl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        name="viewport" />
+    <meta content="#0a0d33" name="theme-color" />
+    <title>Cyber Detective</title>
+
+    <link rel="stylesheet" href="assets/css/style-common.css?v=maze-white-cyan-8">
+    <link rel="stylesheet" href="assets/css/style-game-maze.css?v=maze-white-cyan-8">
+    
+    <!-- <link rel="stylesheet" href="assets/css/style.min.css?v=load-opt-1"> -->
+</head>
+
+<body>
+    <div id="maze-city-fx" aria-hidden="true"><div class="maze-city-scene"><i class="mz-png mzpng-sign-right-off" aria-hidden="true"></i><i class="mz-png mzpng-sign-right-glow" aria-hidden="true"></i><i class="mz-png mzpng-billboard-eye-off" aria-hidden="true"></i><i class="mz-png mzpng-billboard-eye-glow" aria-hidden="true"></i><i class="mz-png mzpng-window-left-off" aria-hidden="true"></i><i class="mz-png mzpng-window-left-glow" aria-hidden="true"></i><i class="mz-png mzpng-window-right-off" aria-hidden="true"></i><i class="mz-png mzpng-window-right-glow" aria-hidden="true"></i></div></div>
+    <button aria-label="Wróć do menu" class="btn-back btn-back-game" data-back="confirm" id="btn-game-back"
+        type="button">
+        <span aria-hidden="true" class="btn-back-ico">←</span>
+    </button>
+    <!-- ============================ OBSZAR GRY ============================ -->
+    <div id="app">
+        <div id="play-block">
+            <header id="hud">
+                <div class="hud-item">
+                    <span class="hud-label" data-t="common.score"></span>
+                    <span class="hud-value" id="score">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label" data-t="common.level"></span>
+                    <span class="hud-value" id="level">1</span>
+                </div>
+                <div class="hud-item hud-lives">
+                    <span class="hud-label" data-t="common.lives"></span>
+                    <span class="hud-value" id="lives"></span>
+                </div>
+            </header>
+            <div id="stage">
+                <canvas id="game"></canvas>
+                <div class="logo-corner" id="logo-corner-slot">
+                    <img alt="" id="logo-corner" src="assets/images/logo-visa.png" />
+                </div>
+                <div class="banner hidden" id="banner"></div>
+                <div aria-live="assertive" class="hidden" id="countdown">
+                    <span id="countdown-value">3</span>
+                </div>
+            </div>
+            <div class="hidden" id="power-bars">
+                    <div class="power-bar is-boost hidden" id="boost-bar">
+                        <span class="power-label" data-t="game.chase"></span>
+                        <div class="power-track">
+                            <div id="boost-fill"></div>
+                        </div>
+                    </div>
+                    <div class="power-bar is-slow hidden" id="slow-bar">
+                        <span class="power-label" data-t="game.slow"></span>
+                        <div class="power-track">
+                            <div id="slow-fill"></div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="hidden" id="thumb-zone">
+            <span class="thumb-label" data-t="game.thumbZone"></span>
+        </div>
+    </div>
+    <div class="hidden" id="touch-layer">
+        <div class="hidden" id="joy-float">
+            <div id="joy-float-base"></div>
+            <div id="joy-float-knob"></div>
+        </div>
+    </div>
+    <div class="hidden" data-t="game.hint" id="touch-hint"></div>
+    <!-- ============================ 1. LOADER ============================ -->
+    <div class="screen" id="screen-loader">
+        <div class="panel panel-center">
+            <div class="logo-slot">
+                <img alt="" class="logo-main" src="assets/images/logo-visa.png" />
+            </div>
+            <h1 class="title" data-t="loader.title"></h1>
+            <div aria-hidden="true" class="loader-spin"></div>
+            <p class="loader-msg" data-t="loader.message" id="loader-msg"></p>
+            <div class="loader-bar">
+                <div id="loader-fill"></div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================ 2. HOME ============================ -->
+    <div id="screen-home" class="screen hidden">
+
+    <div class="home-lights" aria-hidden="true">
+            <div class="home-scene"><i class="mz-png mzpng-screen-low-off" aria-hidden="true"></i><i class="mz-png mzpng-screen-low-glow" aria-hidden="true"></i><i class="mz-png mzpng-screen-side-off" aria-hidden="true"></i><i class="mz-png mzpng-screen-side-glow" aria-hidden="true"></i><i class="mz-png mzpng-wide-orange-off" aria-hidden="true"></i><i class="mz-png mzpng-wide-orange-glow" aria-hidden="true"></i><i class="mz-png mzpng-wide-green-off" aria-hidden="true"></i><i class="mz-png mzpng-wide-green-glow" aria-hidden="true"></i><i class="mz-png mzpng-wide-pink-off" aria-hidden="true"></i><i class="mz-png mzpng-wide-pink-glow" aria-hidden="true"></i><i class="mz-png mzpng-pink-off" aria-hidden="true"></i><i class="mz-png mzpng-pink-glow" aria-hidden="true"></i><i class="mz-png mzpng-green-off" aria-hidden="true"></i><i class="mz-png mzpng-green-glow" aria-hidden="true"></i><i class="mz-png mzpng-orange-off" aria-hidden="true"></i><i class="mz-png mzpng-orange-glow" aria-hidden="true"></i><i class="mz-png mzpng-pink-right-off" aria-hidden="true"></i><i class="mz-png mzpng-pink-right-glow" aria-hidden="true"></i><i class="mz-png mzpng-terminal-off" aria-hidden="true"></i><i class="mz-png mzpng-terminal-glow" aria-hidden="true"></i></div>
+        </div>
+
+        <button class="btn-back" type="button" data-back="exit" aria-label="Wróć do listy gier">
+            <span class="btn-back-ico" aria-hidden="true">←</span>
+        </button>
+
+        <div class="home-layout">
+            <div class="home-top">
+                <div id="logo-main-slot" class="logo-slot home-logo">
+                    <img id="logo-main" class="logo-main" src="assets/images/logo-visa.png" width="440" height="142"
+                        alt="">
+                </div>
+                <h1 class="home-title" data-t="home.title"></h1>
+                <p class="home-subtitle" data-t="home.subtitle"></p>
+            </div>
+
+            <div class="home-bottom">
+                <div class="home-actions">
+                    <button id="btn-play" class="btn pixel-btn pixel-btn-gold" type="button"
+                        data-t="common.play"></button>
+                    <button id="btn-howto" class="btn pixel-btn pixel-btn-blue is-rules" type="button"
+                        data-t="common.howToPlay"></button>
+                    <button id="btn-ranking" class="btn pixel-btn pixel-btn-blue is-ranking hidden" type="button"
+                        data-t="common.ranking"></button>
+                </div>
+                <p id="home-error" class="start-error"></p>
+                <img class="home-footer-logo" src="assets/images/logo-visa.png" width="440" height="142" alt="VISA">
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="screen hidden" id="screen-home">
+        <button aria-label="Wróć do listy gier" class="btn-back" data-back="exit" type="button">
+            <span aria-hidden="true" class="btn-back-ico">←</span>
+        </button>
+        <div class="home-layout">
+            <div class="home-top">
+                <div class="logo-slot home-logo" id="logo-main-slot">
+                    <img alt="" class="logo-main" height="142" id="logo-main" src="assets/images/logo-visa.png" width="440" />
+                </div>
+                <h1 class="home-title" data-t="home.title"></h1>
+                <p class="home-subtitle" data-t="home.subtitle"></p>
+            </div>
+            <div class="home-bottom">
+                <div class="home-actions">
+                    <button class="btn pixel-btn pixel-btn-gold" data-t="common.play" id="btn-play"
+                        type="button"></button>
+                    <button class="btn pixel-btn pixel-btn-blue is-rules" data-t="common.howToPlay" id="btn-howto"
+                        type="button"></button>
+                    <button class="btn pixel-btn pixel-btn-blue is-ranking hidden" data-t="common.ranking"
+                        id="btn-ranking" type="button"></button>
+                </div>
+                <p class="start-error" id="home-error"></p>
+                <img alt="VISA" class="home-footer-logo" height="142" src="assets/images/logo-visa.png" width="440" />
+            </div>
+        </div>
+    </div> -->
+    <!-- ============================ 3. HOW TO PLAY ============================ -->
+    <div class="screen hidden" id="screen-howto">
+        <button aria-label="Wróć do menu" class="btn-back" data-back="home" type="button">
+            <span aria-hidden="true" class="btn-back-ico">←</span>
+        </button>
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img alt="" class="logo-main" src="assets/images/logo-visa.png" />
+            </div>
+            <h2 class="title small" data-t="howto.title"></h2>
+            <ul class="howto-list" id="howto-rules"></ul>
+            <div class="howto-prizes">
+                <h3 class="howto-title" data-t="howto.prizesTitle"></h3>
+                <p class="howto-prizes-text" data-t="howto.prizesText"></p>
+                <ul class="legend compact" id="legend"></ul>
+            </div>
+            <div class="start-actions">
+                <button class="btn btn-primary" data-t="common.play" id="btn-howto-play" type="button"></button>
+            </div>
+            <p class="end-timer hidden" id="howto-timer"></p>
+        </div>
+    </div>
+    <!-- ============================ 4. RANKING ============================ -->
+    <div class="screen hidden" id="screen-ranking">
+        <button aria-label="Wróć" class="btn-back" data-back="auto" type="button">
+            <span aria-hidden="true" class="btn-back-ico">←</span>
+        </button>
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img alt="" class="logo-main" src="assets/images/logo-visa.png" />
+            </div>
+            <h2 class="title small" data-t="ranking.title"></h2>
+            <ol class="top-list top-list-long" id="ranking-list"></ol>
+            <div class="start-actions">
+                <button class="btn btn-primary" data-t="common.play" id="btn-rank-play" type="button"></button>
+            </div>
+            <p class="end-timer hidden" id="ranking-timer"></p>
+        </div>
+    </div>
+    <!-- ============================ 6. GAMEEND ============================ -->
+    <div class="screen hidden" id="screen-gameend">
+        <button aria-label="Wróć do menu" class="btn-back" data-back="home" type="button">
+            <span aria-hidden="true" class="btn-back-ico">←</span>
+        </button>
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img alt="" class="logo-main" src="assets/images/logo-visa.png" />
+            </div>
+            <h2 class="title small" id="end-title"></h2>
+            <p class="result" id="end-score"></p>
+            <p class="result muted" id="end-message"></p>
+            <div class="start-actions">
+                <button class="btn btn-prize hidden" data-t="gameend.win.prize" id="btn-prize" type="button"></button>
+                <button class="btn btn-primary hidden" data-t="gameend.win.addRank" id="btn-addrank"
+                    type="button"></button>
+                <button class="btn btn-ghost" data-t="common.playAgain" id="btn-again" type="button"></button>
+                <button class="btn btn-ghost hidden" data-t="common.ranking" id="btn-end-ranking"
+                    type="button"></button>
+            </div>
+            <p class="end-timer hidden" id="end-timer"></p>
+        </div>
+    </div>
+    <!-- ============================ 7. ADDTORANKING ============================ -->
+    <div class="screen hidden" id="screen-addrank">
+        <button aria-label="Wróć" class="btn-back" data-back="gameend" type="button">
+            <span aria-hidden="true" class="btn-back-ico">←</span>
+        </button>
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img alt="" class="logo-main" src="assets/images/logo-visa.png" />
+            </div>
+            <h2 class="title small" data-t="addrank.title"></h2>
+            <p class="result" id="addrank-score"></p>
+            <p class="addrank-info" data-t="addrank.info"></p>
+            <div class="nick-box" id="addrank-box">
+                <div class="nick-row">
+                    <input autocapitalize="off" autocomplete="off" class="nick-input" id="nick-input" maxlength="20"
+                        spellcheck="false" type="text" />
+                    <button class="btn btn-primary btn-small" data-t="addrank.add" id="btn-nick-add"
+                        type="button"></button>
+                </div>
+                <p class="rank-status" id="addrank-status"></p>
+            </div>
+            <ol class="top-list" id="addrank-list"></ol>
+            <p class="end-timer hidden" id="addrank-timer"></p>
+        </div>
+    </div>
+    <!-- ============================ 8. PRIZE ============================ -->
+    <div class="screen hidden" id="screen-prize">
+        <button aria-label="Wróć" class="btn-back" data-back="gameend" type="button">
+            <span aria-hidden="true" class="btn-back-ico">←</span>
+        </button>
+        <div class="panel prize-panel">
+            <article class="prize-ticket" aria-labelledby="prize-ticket-title">
+                <div class="prize-ticket-brands">
+                    <img src="assets/images/logo-visa.png" width="440" height="142" alt="Visa">
+                    <span class="prize-brand-divider" aria-hidden="true"></span>
+                    <img src="assets/images/logo-kfc.png" width="361" height="198" alt="KFC">
+                </div>
+                <div class="prize-ticket-body">
+                    <h2 id="prize-ticket-title" class="prize-game-title" data-t="home.title">Cyber Detective</h2>
+                    <p class="result muted" id="prize-type"></p>
+                    <h3 class="prize-ticket-heading" data-t="prize.title"></h3>
+                    <div class="prize-code-box">
+                        <span class="prize-code-label" data-t="prize.codeLabel"></span>
+                        <span class="prize-code" id="prize-code">—</span>
+                    </div>
+                    <button class="btn-copy" id="btn-copy" type="button">
+                    <span aria-hidden="true" class="copy-ico">⧉</span>
+                    <span id="copy-label"></span>
+                </button>
+                    <p class="prize-hint" id="prize-hint"></p>
+                </div>
+            </article>
+            <div class="prize-ticket-actions">
+                <div class="start-actions"><button class="btn btn-ghost hidden" data-t="prize.download" id="btn-download" type="button"></button></div>
+            </div>
+            <p id="prize-timer" class="end-timer hidden"></p>
+        </div>
+    </div>
+    <!-- ============================ 9. ERROR (modal) ============================ -->
+    <div class="screen hidden" id="screen-error">
+        <div class="panel panel-center">
+            <div aria-hidden="true" class="error-ico">!</div>
+            <h2 class="title small" data-t="error.title"></h2>
+            <p class="result muted" id="error-msg"></p>
+            <div class="start-actions">
+                <button class="btn btn-primary hidden" data-t="error.retry" id="btn-error-retry" type="button"></button>
+                <button class="btn btn-ghost" data-t="error.quit" id="btn-error-quit" type="button"></button>
+            </div>
+            <p class="end-timer hidden" id="error-timer"></p>
+        </div>
+    </div>
+    <!-- ============================ CONFIRM (modal) ============================ -->
+    <div class="screen hidden" id="screen-confirm">
+        <div class="panel panel-center panel-confirm">
+            <div aria-hidden="true" class="confirm-ico">?</div>
+            <h2 class="title small" data-t="confirm.title"></h2>
+            <p class="result muted" data-t="confirm.message"></p>
+            <div class="confirm-actions">
+                <button class="btn btn-ghost" data-t="confirm.yes" id="btn-confirm-yes" type="button"></button>
+                <button class="btn btn-primary" data-t="confirm.no" id="btn-confirm-no" type="button"></button>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/texts.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/source.js"></script>
+    <script src="assets/js/screens.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/assets.js"></script>
+    <script src="assets/js/input.js"></script>
+    <script src="assets/js/maze.js"></script>
+    <script src="assets/js/drones.js"></script>
+    <script src="assets/js/effects.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/maze-delivery-ui.js"></script>
+    <script src="assets/js/maze-legend-icon-fix.js"></script>
+    <script src="assets/js/flow.js"></script>
+    <script src="assets/js/game.js"></script>
+
+    <!-- <script src="assets/js/app.min.js"></script> -->
+</body>
+</html>

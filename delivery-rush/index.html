@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0d33">
+    <title>Delivery Rush</title>
+    <link rel="preload" as="image" href="assets/images/home-bg.jpg" fetchpriority="high">
+    <!-- <link rel="stylesheet" href="assets/css/style.min.css?v=load-opt-1"> -->
+    <link rel="stylesheet" href="assets/css/style-common.css?v=load-opt-1">
+    <link rel="stylesheet" href="assets/css/style-game.css?v=load-opt-1">
+
+    
+    <!-- <link rel="stylesheet" href="assets/css/style.min.css?v=load-opt-1"> -->
+
+</head>
+
+<body>
+    <div id="city-bg" aria-hidden="true">
+        <div class="city"><i class="window-game-a" aria-hidden="true"></i><i class="window-game-b"
+                aria-hidden="true"></i><i class="window-game-c" aria-hidden="true"></i><i class="ov neon n0"></i><i
+                class="ov neon n1"></i><i class="ov neon n2"></i><i class="ov neon n3"></i><i class="ov neon n4"></i><i
+                class="ov neon n5"></i><i class="ov neon n6"></i><i class="ov neon n7"></i><i class="ov neon n8"></i><i
+                class="ov neon n9"></i><i class="ov neon n10"></i><i class="ov neon n11"></i><i
+                class="ov neon n12"></i><i class="ov neon n13"></i><i class="ov neon n14"></i><i
+                class="ov neon n15"></i><i class="ov neon n16"></i><i class="ov neon n17"></i><i
+                class="ov win w0"></i><i class="ov win w1"></i><i class="ov win w2"></i><i class="ov win w3"></i><i
+                class="ov win w4"></i><i class="ov win w5"></i><i class="ov win w6"></i><i class="ov win w7"></i><i
+                class="ov win w8"></i><i class="ov win w9"></i><i class="ov win w10"></i><i class="ov win w11"></i><i
+                class="ov win w12"></i><i class="bcn b0"></i><i class="bcn b1"></i><i class="bcn b2"></i><i
+                class="bcn b3"></i><i class="bcn b4"></i><i class="bcn b5"></i><i class="hl h0"></i><i
+                class="hl h1"></i><i class="hl h2"></i><i class="hl h3"></i><i class="hl h4"></i><i class="hl h5"></i><i
+                class="fly f1"></i><i class="fly f2"></i><i class="fly f3"></i></div>
+    </div>
+
+    <button id="btn-game-back" class="btn-back btn-back-game" type="button" data-back="confirm"
+        aria-label="Wróć do menu">
+        <span class="btn-back-ico" aria-hidden="true">←</span>
+    </button>
+
+    <!-- ============================================================
+     OBSZAR GRY
+     ============================================================ -->
+    <div id="app">
+        <div id="play-block">
+            <header id="hud">
+                <div class="hud-item">
+                    <span class="hud-label" data-t="common.score">Wynik</span>
+                    <span id="score" class="hud-value">0</span>
+                </div>
+                <div class="hud-item" id="hud-best">
+                    <span class="hud-label" data-t="common.best">Rekord</span>
+                    <span id="best" class="hud-value">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label" data-t="common.level">Poziom</span>
+                    <span id="level" class="hud-value">1</span>
+                </div>
+
+            </header>
+
+            <div id="stage">
+                <canvas id="game"></canvas>
+
+                <div id="logo-corner-slot" class="logo-corner">
+                    <img id="logo-corner" src="assets/images/logo-visa.png" width="440" height="142" alt="">
+                </div>
+
+                <div id="power-bars" class="hidden">
+                    <div id="boost-bar" class="power-bar is-boost hidden">
+                        <span class="power-label">x2</span>
+                        <div class="power-track">
+                            <div id="boost-fill"></div>
+                        </div>
+                    </div>
+                    <div id="slow-bar" class="power-bar is-slow hidden">
+                        <span class="power-label">SLOW</span>
+                        <div class="power-track">
+                            <div id="slow-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="combo" class="hidden"></div>
+
+                <div id="countdown" class="hidden" aria-live="assertive">
+                    <span id="countdown-value">3</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="thumb-zone" class="hidden">
+            <span class="thumb-label" data-t="game.thumbZone"></span>
+        </div>
+    </div>
+
+    <div id="touch-layer" class="hidden">
+        <div id="joy-float" class="hidden">
+            <div id="joy-float-base"></div>
+            <div id="joy-float-knob"></div>
+        </div>
+    </div>
+    <div id="touch-hint" class="hidden"></div>
+
+
+    <!-- ============================================================
+     1. LOADER
+     ============================================================ -->
+    <div id="screen-loader" class="screen">
+        <div class="panel panel-center">
+            <div class="logo-slot">
+                <img class="logo-main" src="assets/images/logo-visa.png" width="440" height="142" alt="">
+            </div>
+            <h1 class="title" data-t="loader.title"></h1>
+
+            <div class="loader-spin" aria-hidden="true"></div>
+            <p class="loader-msg" id="loader-msg" data-t="loader.message"></p>
+
+            <div class="loader-bar">
+                <div id="loader-fill"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     2. HOME
+     ============================================================ -->
+    <div id="screen-home" class="screen hidden">
+        <div class="home-lights" aria-hidden="true">
+            <div class="home-scene">
+                <i class="hfx-stars-a"></i><i class="hfx-stars-b"></i><i class="hfx-window-a"></i><i class="hfx-window-b"></i><i class="hfx-window-d"></i><i class="hfx-window-c"></i><i class="hfx-neon-24h"></i><i class="hfx-neon-kfc-v"></i><i class="hfx-neon-kfc"></i><i class="hfx-glow-visa"></i><i class="hfx-glow-lamp"></i><i class="hfx-led-a"></i><i class="hfx-led-b"></i><i class="hfx-trail-glow"></i><i class="hfx-glow-headlight"></i>
+                <i class="hfx-atm-halo"></i><i class="hfx-atm-rays-a"></i><i class="hfx-atm-rays-b"></i><i class="hfx-atm-screen"></i><i class="hfx-atm-scan"></i><i class="hfx-atm-sign"></i>
+
+            </div>
+        </div>
+
+        <button class="btn-back" type="button" data-back="exit" aria-label="Wróć do listy gier">
+            <span class="btn-back-ico" aria-hidden="true">←</span>
+        </button>
+
+        <div class="home-layout">
+            <div class="home-top">
+                <div id="logo-main-slot" class="logo-slot home-logo">
+                    <img id="logo-main" class="logo-main" src="assets/images/logo-visa.png" width="440" height="142"
+                        alt="">
+                </div>
+                <h1 class="home-title">Delivery<br>Rush</h1>
+                <p class="home-subtitle">Zbieraj punkty i wygrywaj nagrody</p>
+            </div>
+
+            <div class="home-bottom">
+                <div class="home-actions">
+                    <button id="btn-play" class="btn pixel-btn pixel-btn-gold" type="button"
+                        data-t="common.play"></button>
+                    <button id="btn-howto" class="btn pixel-btn pixel-btn-blue is-rules" type="button"
+                        data-t="common.howToPlay"></button>
+                    <button id="btn-ranking" class="btn pixel-btn pixel-btn-blue is-ranking hidden" type="button"
+                        data-t="common.ranking"></button>
+                </div>
+                <p id="home-error" class="start-error"></p>
+                <img class="home-footer-logo" src="assets/images/logo-visa.png" width="440" height="142" alt="VISA">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     3. HOW TO PLAY
+     ============================================================ -->
+    <div id="screen-howto" class="screen hidden">
+
+        <button class="btn-back" type="button" data-back="home" aria-label="Wróć do menu">
+            <span class="btn-back-ico" aria-hidden="true">←</span>
+        </button>
+
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img class="logo-main" src="assets/images/logo-visa.png" width="440" height="142" alt="">
+            </div>
+
+            <h2 class="title small" data-t="howto.title"></h2>
+
+            <ul id="howto-rules" class="howto-list"></ul>
+
+            <div class="howto-prizes">
+                <h3 class="howto-title" data-t="howto.prizesTitle"></h3>
+                <p class="howto-prizes-text" data-t="howto.prizesText"></p>
+                <ul id="legend" class="legend"></ul>
+            </div>
+
+            <div class="start-actions">
+                <button id="btn-howto-play" class="btn btn-primary" type="button" data-t="common.play"></button>
+            </div>
+
+            <p id="howto-timer" class="end-timer hidden"></p>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     4. RANKING
+     ============================================================ -->
+    <div id="screen-ranking" class="screen hidden">
+
+        <button class="btn-back" type="button" data-back="auto" aria-label="Wróć">
+            <span class="btn-back-ico" aria-hidden="true">←</span>
+        </button>
+
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img class="logo-main" src="assets/images/logo-visa.png" width="440" height="142" alt="">
+            </div>
+
+            <h2 class="title small" data-t="ranking.title"></h2>
+
+            <ol id="ranking-list" class="top-list top-list-long"></ol>
+
+            <div class="start-actions">
+                <button id="btn-rank-play" class="btn btn-primary" type="button" data-t="common.play"></button>
+            </div>
+
+            <p id="ranking-timer" class="end-timer hidden"></p>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     6. GAMEEND — jeden ekran, dwa warianty sterowane z JS
+     ============================================================ -->
+    <div id="screen-gameend" class="screen hidden">
+        <button class="btn-back" type="button" data-back="home" aria-label="Wróć do menu">
+            <span class="btn-back-ico" aria-hidden="true">←</span>
+        </button>
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img class="logo-main" src="assets/images/logo-visa.png" width="440" height="142" alt="">
+            </div>
+
+            <h2 class="title small" id="end-title"></h2>
+            <p class="result" id="end-score"></p>
+            <p class="result muted" id="end-message"></p>
+
+            <div class="start-actions">
+                <button id="btn-prize" class="btn btn-prize hidden" type="button" data-t="gameend.win.prize"></button>
+                <button id="btn-addrank" class="btn btn-primary hidden" type="button"
+                    data-t="gameend.win.addRank"></button>
+                <button id="btn-again" class="btn btn-ghost" type="button" data-t="common.playAgain"></button>
+                <button id="btn-end-ranking" class="btn btn-ghost hidden" type="button"
+                    data-t="common.ranking"></button>
+            </div>
+
+            <p id="end-timer" class="end-timer hidden"></p>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     7. ADDTORANKING
+     ============================================================ -->
+    <div id="screen-addrank" class="screen hidden">
+
+        <button class="btn-back" type="button" data-back="gameend" aria-label="Wróć">
+            <span class="btn-back-ico" aria-hidden="true">←</span>
+        </button>
+
+        <div class="panel">
+            <div class="logo-slot logo-slot-sm">
+                <img class="logo-main" src="assets/images/logo-visa.png" width="440" height="142" alt="">
+            </div>
+            <h2 class="title small" data-t="addrank.title"></h2>
+            <p class="result" id="addrank-score"></p>
+            <p class="addrank-info" data-t="addrank.info"></p>
+            <div class="nick-box" id="addrank-box">
+                <div class="nick-row">
+                    <input id="nick-input" class="nick-input" type="text" maxlength="20" autocomplete="off"
+                        autocapitalize="off" spellcheck="false">
+                    <button id="btn-nick-add" class="btn btn-primary btn-small" type="button"
+                        data-t="addrank.add"></button>
+                </div>
+                <p id="addrank-status" class="rank-status"></p>
+            </div>
+            <ol id="addrank-list" class="top-list"></ol>
+
+            <p id="addrank-timer" class="end-timer hidden"></p>
+        </div>
+    </div>
+
+
+    <!-- ============================================================
+     8. PRIZE
+     ============================================================ -->
+    <div id="screen-prize" class="screen hidden">
+
+        <button class="btn-back" type="button" data-back="gameend" aria-label="Wróć">
+            <span class="btn-back-ico" aria-hidden="true">←</span>
+        </button>
+
+        <div class="panel prize-panel">
+            <article class="prize-ticket" aria-labelledby="prize-ticket-title">
+                <div class="prize-ticket-brands">
+                    <img src="assets/images/logo-visa.png" width="440" height="142" alt="Visa">
+                    <span class="prize-brand-divider" aria-hidden="true"></span>
+                    <img src="assets/images/logo-kfc.png" width="361" height="198" alt="KFC">
+                </div>
+                <div class="prize-ticket-body">
+                    <h2 id="prize-ticket-title" class="prize-game-title" data-t="home.title">Delivery Rush</h2>
+                    <p class="result muted" id="prize-type"></p>
+                    <h3 class="prize-ticket-heading" data-t="prize.title"></h3>
+                    <div class="prize-code-box">
+                        <span class="prize-code-label" data-t="prize.codeLabel"></span>
+                        <span class="prize-code" id="prize-code">—</span>
+                    </div>
+                    <button id="btn-copy" class="btn-copy" type="button">
+                    <span class="copy-ico" aria-hidden="true">⧉</span>
+                    <span id="copy-label"></span>
+                </button>
+                    <p class="prize-hint" id="prize-hint"></p>
+                </div>
+            </article>
+            <div class="prize-ticket-actions">
+                <div class="start-actions"><button id="btn-download" class="btn btn-ghost hidden" type="button" data-t="prize.download"></button></div>
+            </div>
+            <p id="prize-timer" class="end-timer hidden"></p>
+        </div>
+    </div>
+    <!-- ============================================================
+     9. ERROR
+     ============================================================ -->
+    <div id="screen-error" class="screen hidden">
+        <div class="panel panel-center">
+            <div class="error-ico" aria-hidden="true">!</div>
+            <h2 class="title small" data-t="error.title"></h2>
+            <p class="result muted" id="error-msg"></p>
+
+            <div class="start-actions">
+                <button id="btn-error-retry" class="btn btn-primary hidden" type="button" data-t="error.retry"></button>
+                <button id="btn-error-quit" class="btn btn-ghost" type="button" data-t="error.quit"></button>
+            </div>
+            <p id="error-timer" class="end-timer hidden"></p>
+        </div>
+    </div>
+
+
+    <!-- PAUZA (nakładka, poza routerem) -->
+    <div id="screen-confirm" class="screen hidden">
+        <div class="panel panel-center panel-confirm">
+            <div class="confirm-ico" aria-hidden="true">?</div>
+
+            <h2 class="title small" data-t="confirm.title"></h2>
+            <p class="result muted" data-t="confirm.message"></p>
+
+            <div class="confirm-actions">
+                <button id="btn-confirm-yes" class="btn btn-ghost" type="button" data-t="confirm.yes"></button>
+                <button id="btn-confirm-no" class="btn btn-primary" type="button" data-t="confirm.no"></button>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/texts.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/source.js"></script>
+    <script src="assets/js/config-check.js"></script>
+    <script src="assets/js/screens.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/assets.js"></script>
+    <script src="assets/js/input.js"></script>
+    <script src="assets/js/blink.js"></script>
+    <script src="assets/js/powerups.js"></script>
+    <script src="assets/js/effects.js"></script>
+    <script src="assets/js/food.js"></script>
+    <script src="assets/js/courier.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/flow.js"></script>
+    <script src="assets/js/game.js"></script> 
+
+ <!-- 
+    <script src="assets/js/app.min.js"></script> -->
+   
+</body>
+</html>

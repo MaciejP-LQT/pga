@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0d33">
+<meta name="description" content="Gra Combo Match — odkrywaj pary kart i zbieraj nagrody.">
+<link rel="icon" href="https://amrestcdn.azureedge.net/kfc-web-ordering/assets/favicon.ico"><!-- 32×32 -->
+<link rel="icon" href="https://amrestcdn.azureedge.net/kfc-web-ordering/assets/img/favicon/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://amrestcdn.azureedge.net/kfc-web-ordering/assets/img/PWA/logo_180x180.png"><!-- 180×180 -->
+<title>Combo Match</title>
+<link rel="preload" href="fonts/PressStart2P.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Inter_24pt-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Inter_24pt-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/btn-y.png" as="image">
+<link rel="preload" href="assets/btn-b.png" as="image">
+<link rel="preload" href="assets/btn-back.png" as="image">
+<link rel="preload" href="assets/btn-small.png" as="image">
+<link rel="preload" href="assets/bg-neon.jpg" as="image">
+<link rel="preload" href="assets/pixel-robot.png" as="image">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+<button id="btn-game-back" class="btn-back btn-back-game"
+        type="button" data-back="confirm" aria-label="Wróć do menu">
+    <span class="btn-back-ico" aria-hidden="true">←</span>
+</button>
+
+<!-- ============================================================
+     OBSZAR GRY
+     ============================================================ -->
+<div id="app">
+    <div id="play-block">
+
+      <!-- Stats Bar TOP (HUD) -->
+      <header id="hud" class="hud-top">
+        <div class="hud-item hud-item-bonus" id="hud-bonus">
+          <span class="hud-label">Bonus</span>
+          <span class="hud-value" id="stat-bonus">x1</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label" data-t="common.score">Punkty</span>
+          <span class="hud-value" id="stat-score">0</span>
+        </div>
+        <div class="hud-item hud-item-time">
+          <span class="hud-label">Czas</span>
+          <span class="hud-value hud-value-time" id="stat-time">0:45</span>
+        </div>
+      </header>
+
+      <!-- Game Board -->
+      <div id="stage">
+
+        <div class="game-board" id="game-board">
+          <!-- Cards injected by game.js -->
+        </div>
+
+        <!-- Visa corner logo -->
+        <div class="logo-corner">
+          <img src="assets/logo-visa.png" alt="">
+        </div>
+      </div>
+
+      <!-- Stats Bar BOTTOM (HUD) -->
+      <div id="hud-bottom" class="hud-bottom">        
+        <div class="hud-item">
+          <span class="hud-label">Pary</span>
+          <span class="hud-value" id="stat-pairs">0 / 8</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Etap</span>
+          <span class="hud-value" id="stage-badge">1</span>
+        </div>
+      </div>
+
+      <!-- Stage Complete Overlay (within game, NOT a screen) -->
+      <div id="stage-overlay" class="stage-overlay hidden">
+        <div class="stage-overlay-panel">
+          <h2 class="title small" id="stage-overlay-title">🏆 Etap ukończony!</h2>
+          <p class="result">Punkty: <span id="stage-overlay-score">0</span></p>
+          <p class="result muted">Czas: <span id="stage-overlay-time">0:00</span></p>
+          <p class="result muted" id="stage-overlay-info"></p>
+          <div class="start-actions">
+            <button class="btn btn-primary" id="btn-next-stage" type="button" data-t="game.nextStageBtn">NASTĘPNY ETAP</button>
+            <button class="btn btn-ghost" id="btn-stage-restart" type="button" data-t="common.playAgain">ZAGRAJ PONOWNIE</button>
+            <button class="btn btn-primary" id="btn-stage-finish" type="button" data-t="game.finishBtn">ZAKOŃCZ I ODBIERZ NAGRODY</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+</div>
+
+
+<!-- ============================================================
+     1. LOADER
+     ============================================================ -->
+<div id="screen-loader" class="screen">
+    <div class="panel panel-center">
+        <div class="logo-slot">
+            <img class="logo-main" src="assets/logo-visa.png" alt="">
+        </div>
+        <h1 class="title" data-t="loader.title"><span class="title-blue">COMBO</span> <span class="title-gold">MATCH</span></h1>
+
+        <div class="loader-spin" aria-hidden="true"></div>
+        <p class="loader-msg" id="loader-msg" data-t="loader.message"></p>
+
+        <div class="loader-bar"><div id="loader-fill"></div></div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     2. HOME
+     ============================================================ -->
+<div id="screen-home" class="screen hidden">
+
+    <div class="home-lights" aria-hidden="true">
+        <div class="home-scene">
+            <i class="home-neon home-neon-1"></i>
+            <i class="home-neon home-neon-2"></i>
+            <i class="home-neon home-neon-3"></i>
+            <i class="home-neon home-neon-4"></i>
+            <i class="home-neon home-neon-5"></i>
+        </div>
+    </div>
+
+    <button class="btn-back" type="button" data-back="exit"
+            aria-label="Wróć do listy gier">
+        <span class="btn-back-ico" aria-hidden="true">←</span>
+    </button>
+
+    <div class="panel">
+        <div class="logo-slot">
+            <img class="logo-main" src="assets/logo-visa.png" alt="">
+        </div>
+
+        <h1 class="title" data-t="home.title"><span class="title-blue">COMBO</span> <span class="title-gold">MATCH</span></h1>
+        <p class="subtitle" data-t="home.subtitle"></p>
+
+        <div class="robot-slot">
+            <img class="robot-img" src="assets/pixel-robot.png" alt="" aria-hidden="true">
+        </div>
+
+        <div class="start-actions">
+            <button id="btn-play" class="btn btn-primary" type="button" data-t="common.play"></button>
+            <button id="btn-howto" class="btn btn-ghost" type="button" data-t="common.howToPlay"></button>
+            <button id="btn-ranking" class="btn btn-ghost hidden" type="button" data-t="common.ranking"></button>
+        </div>
+
+        <p id="home-error" class="start-error"></p>
+
+        <div class="logo-bottom">
+            <img src="assets/logo-visa.png" alt="Visa">
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     3. HOW TO PLAY
+     ============================================================ -->
+<div id="screen-howto" class="screen hidden">
+
+    <button class="btn-back" type="button" data-back="home"
+            aria-label="Wróć do menu">
+        <span class="btn-back-ico" aria-hidden="true">←</span>
+    </button>
+
+    <div class="panel">
+        <div class="logo-slot logo-slot-sm">
+            <img class="logo-main" src="assets/logo-visa.png" alt="">
+        </div>
+
+        <h2 class="title small" data-t="howto.title"></h2>
+
+        <ul id="howto-rules" class="howto-list"></ul>
+
+        <div class="start-actions">
+            <button id="btn-howto-play" class="btn btn-primary" type="button" data-t="common.play"></button>
+        </div>
+
+        <p id="howto-timer" class="end-timer hidden"></p>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     4. RANKING
+     ============================================================ -->
+<div id="screen-ranking" class="screen hidden">
+
+    <button class="btn-back" type="button" data-back="auto"
+            aria-label="Wróć">
+        <span class="btn-back-ico" aria-hidden="true">←</span>
+    </button>
+
+    <div class="panel">
+        <div class="logo-slot logo-slot-sm">
+            <img class="logo-main" src="assets/logo-visa.png" alt="">
+        </div>
+
+        <h2 class="title small" data-t="ranking.title"></h2>
+
+        <ol id="ranking-list" class="top-list top-list-long"></ol>
+
+        <div class="start-actions">
+            <button id="btn-rank-play" class="btn btn-primary" type="button" data-t="common.play"></button>
+        </div>
+
+        <p id="ranking-timer" class="end-timer hidden"></p>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     6. GAMEEND
+     ============================================================ -->
+<div id="screen-gameend" class="screen hidden">
+    <button class="btn-back" type="button" data-back="home"
+            aria-label="Wróć do menu">
+        <span class="btn-back-ico" aria-hidden="true">←</span>
+    </button>
+    <div class="panel">
+        <div class="logo-slot logo-slot-sm">
+            <img class="logo-main" src="assets/logo-visa.png" alt="">
+        </div>
+
+        <h2 class="title small" id="end-title"></h2>
+        <p class="result" id="end-score"></p>
+        <p class="result muted" id="end-message"></p>
+
+        <div class="start-actions">
+            <button id="btn-prize" class="btn btn-prize hidden" type="button" data-t="gameend.win.prize"></button>
+            <button id="btn-addrank" class="btn btn-primary hidden" type="button" data-t="gameend.win.addRank"></button>
+            <button id="btn-again" class="btn btn-ghost" type="button" data-t="common.playAgain"></button>
+            <button id="btn-end-ranking" class="btn btn-ghost hidden" type="button" data-t="common.ranking"></button>
+        </div>
+
+        <p id="end-timer" class="end-timer hidden"></p>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     7. ADDTORANKING
+     ============================================================ -->
+<div id="screen-addrank" class="screen hidden">
+
+    <button class="btn-back" type="button" data-back="gameend" aria-label="Wróć">
+        <span class="btn-back-ico" aria-hidden="true">←</span>
+    </button>
+
+    <div class="panel">
+        <div class="logo-slot logo-slot-sm">
+            <img class="logo-main" src="assets/logo-visa.png" alt="">
+        </div>
+        <h2 class="title small" data-t="addrank.title"></h2>
+        <p class="result" id="addrank-score"></p>
+        <p class="addrank-info" data-t="addrank.info"></p>
+        <div class="nick-box" id="addrank-box">
+            <div class="nick-row">
+                <input id="nick-input" class="nick-input" type="text"
+                       maxlength="20" autocomplete="off" autocapitalize="off"
+                       spellcheck="false">
+                <button id="btn-nick-add" class="btn btn-primary btn-small" type="button" data-t="addrank.add"></button>
+            </div>
+            <p id="addrank-status" class="rank-status"></p>
+        </div>
+        <ol id="addrank-list" class="top-list"></ol>
+
+        <p id="addrank-timer" class="end-timer hidden"></p>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     8. PRIZE
+     ============================================================ -->
+<div id="screen-prize" class="screen hidden">
+
+    <button class="btn-back" type="button" data-back="gameend" aria-label="Wróć">
+        <span class="btn-back-ico" aria-hidden="true">←</span>
+    </button>
+
+    <div class="panel prize-panel">
+        <article class="prize-ticket" aria-labelledby="prize-ticket-title">
+            <div class="prize-ticket-brands">
+                <img src="assets/logo-visa.png" alt="Visa">
+                <span class="prize-brand-divider" aria-hidden="true"></span>
+                <img src="assets/logo-kfc.png" alt="KFC">
+            </div>
+            <div class="prize-ticket-body">
+                <h2 id="prize-ticket-title" class="prize-game-title" data-t="prize.gameTitle"></h2>
+                <h3 class="prize-ticket-heading" data-t="prize.title"></h3>
+                <p class="result muted" id="prize-type"></p>
+                <div class="prize-code-box">
+                    <span class="prize-code-label" data-t="prize.codeLabel"></span>
+                    <span class="prize-code" id="prize-code">—</span>
+                </div>
+                <button id="btn-copy" class="btn-copy" type="button">
+                    <span class="copy-ico" aria-hidden="true">⧉</span>
+                    <span id="copy-label"></span>
+                </button>
+                <p class="prize-hint" id="prize-hint"></p>
+            </div>
+        </article>
+        <div class="prize-ticket-actions">
+            <div class="start-actions">
+                <button id="btn-download" class="btn btn-ghost hidden" type="button" data-t="prize.download"></button>
+            </div>
+        </div>
+
+        <p id="prize-timer" class="end-timer hidden"></p>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     9. ERROR
+     ============================================================ -->
+<div id="screen-error" class="screen hidden">
+    <div class="panel panel-center">
+        <div class="error-ico" aria-hidden="true">!</div>
+        <h2 class="title small" data-t="error.title"></h2>
+        <p class="result muted" id="error-msg"></p>
+
+        <div class="start-actions">
+            <button id="btn-error-retry" class="btn btn-primary hidden" type="button" data-t="error.retry"></button>
+            <button id="btn-error-quit" class="btn btn-ghost" type="button" data-t="error.quit"></button>
+        </div>
+        <p id="error-timer" class="end-timer hidden"></p>
+    </div>
+</div>
+
+
+<!-- PAUZA (nakładka, poza routerem) -->
+<div id="screen-confirm" class="screen hidden">
+    <div class="panel panel-center panel-confirm">
+        <div class="confirm-ico" aria-hidden="true">?</div>
+
+        <h2 class="title small" data-t="confirm.title"></h2>
+        <p class="result muted" data-t="confirm.message"></p>
+
+        <div class="confirm-actions">
+            <button id="btn-confirm-yes" class="btn btn-ghost" type="button"
+                    data-t="confirm.yes"></button>
+            <button id="btn-confirm-no" class="btn btn-primary" type="button"
+                    data-t="confirm.no"></button>
+        </div>
+    </div>
+</div>
+
+
+<script src="js/texts.js"></script>
+<script src="js/config.js"></script>
+<script src="js/source.js"></script>
+<script src="js/config-check.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/api.js"></script>
+<script src="js/game.js"></script>
+<script src="js/flow.js"></script>
+<script>
+    /* Jedyny punkt startowy — flow.js spina wszystko */
+    document.addEventListener('DOMContentLoaded', () => Flow.init());
+</script>
+</body>
+</html>
