@@ -73,6 +73,10 @@ window.CONFIG = {
     SLOW_PULSE_MS: 900,
 
     /* ---------- EFEKTY ---------- */
+    HAPTIC_FEEDBACK: true,
+    HAPTIC_ITEM_MS: 50,       // przedmioty i wzmocnienia, bez lup
+    HAPTIC_LIFE_LOST_MS: 150,
+
     PARTICLES_ENABLED: true,
     PARTICLE_COUNT: 9,
     PARTICLE_LIFE_MS: 520,

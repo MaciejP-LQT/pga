@@ -46,6 +46,14 @@ window.Game = (function () {
     let playStartedAt = 0, playStartedGameNow = 0;
     let scoreLog = [];
     function gameNow() { return performance.now() - pauseOffset; }
+    function vibrate(duration) {
+        if (!CONFIG.HAPTIC_FEEDBACK) return;
+        try {
+            if (typeof navigator.vibrate === 'function') navigator.vibrate(duration);
+        } catch {
+            // Opcjonalna wibracja nie może przerwać gry, jeśli przeglądarka ją blokuje.
+        }
+    }
 
     /* ---------------- canvas ---------------- */
     function resize() {
@@ -289,6 +297,7 @@ window.Game = (function () {
     }
     function loseLife() {
         lives--;
+        vibrate(CONFIG.HAPTIC_LIFE_LOST_MS);
         UI.setLives(lives);
         Effects.burst(hero.x, hero.y, '#ff5252', 24, CONFIG.PARTICLE_SPEED * 1.7);
         Effects.shake(CONFIG.SHAKE_DEATH_MS, CONFIG.SHAKE_DEATH_POWER);
@@ -356,6 +365,7 @@ window.Game = (function () {
         if (pIdx >= 0) {
             const p = powerCells[pIdx];
             powerCells.splice(pIdx, 1);
+            vibrate(CONFIG.HAPTIC_ITEM_MS);
             if (p.kind === 'boost') {
                 boostLeft = CONFIG.BOOST_DURATION_MS;
                 captureChain = 0;
@@ -373,6 +383,7 @@ window.Game = (function () {
             }
         }
         if (item && item.x === hero.x && item.y === hero.y) {
+            vibrate(CONFIG.HAPTIC_ITEM_MS);
             const gained = addScore(item.points);
             Effects.burst(item.x, item.y, item.color, 12);
             /* w trakcie Visa x2: zloty napis "+100 VISA x2" (jak w Delivery Rush) */
