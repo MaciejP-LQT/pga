@@ -295,6 +295,11 @@ window.Flow = (function () {
        6. GAMEEND
        ===================================================== */
 
+    function canClaimPrize() {
+        return CONFIG.API_ENABLED && lastScore >= CONFIG.PRIZE_MIN_SCORE &&
+               !!(lastEnd && lastEnd.eligible && !lastEnd.suspicious);
+    }
+
     Screens.on('gameend', {
         enter(data) {
             const score = data.score !== undefined ? data.score : lastScore;
@@ -325,8 +330,7 @@ window.Flow = (function () {
                zapisać wynik w rankingu. Stąd dwa niezależne warunki. */
             const isSuspicious = !!(lastEnd && lastEnd.suspicious);
 
-            const canPrize = CONFIG.API_ENABLED && lastEnd && lastEnd.eligible && !isSuspicious;
-            $('btn-prize').classList.toggle('hidden', !canPrize);
+            $('btn-prize').classList.toggle('hidden', !canClaimPrize());
 
             const canRank = won && CONFIG.API_ENABLED &&
                             lastEnd && lastEnd.rankingActive &&
@@ -525,6 +529,8 @@ window.Flow = (function () {
        zamiast pustego pola "—" pod nagłówkiem "Twoja nagroda".
        ===================================================== */
     async function claimAndShowPrize() {
+        if (!canClaimPrize()) return;
+
         const btn = $('btn-prize');
         const label = btn ? btn.textContent : '';
 
