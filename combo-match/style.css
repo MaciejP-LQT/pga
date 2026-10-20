@@ -550,10 +550,6 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(7, 10, 38, .8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 16px;
 }
 
 .stage-overlay.hidden {
@@ -724,8 +720,9 @@ button {
     82%, 85% { opacity: .65; }
 }
 
-/* Panel with semi-transparent bg for game screens (howto, ranking, gameend, addrank, prize) */
-.screen:not(#screen-home):not(#screen-error):not(#screen-confirm)>.panel {
+/* Panel with semi-transparent bg for game screens and the stage summary. */
+.screen:not(#screen-home):not(#screen-error):not(#screen-confirm)>.panel,
+.stage-overlay-panel {
     background: rgba(14, 20, 62, .88);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
