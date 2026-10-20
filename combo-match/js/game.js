@@ -61,7 +61,7 @@ window.Game = (function () {
     }
 
     /* =====================================================
-       DOPASOWANIE PLANSZY DO WYSOKOŚCI OKNA
+       DOPASOWANIE PLANSZY DO DOSTĘPNEJ SZEROKOŚCI I WYSOKOŚCI
        ===================================================== */
     let layoutObserver = null;
     let layoutFrame = null;
@@ -85,16 +85,16 @@ window.Game = (function () {
         const overhead = block.getBoundingClientRect().height - board.getBoundingClientRect().height;
         const height = Math.min(size, (availableHeight - overhead - (rows - 1) * gap - 1) / rows);
 
-        if (height >= size) {
-            board.style.removeProperty('--card-width');
-            board.style.removeProperty('--card-height');
-            return;
-        }
-
         const stageStyle = getComputedStyle(stage);
         const availableWidth = stage.clientWidth
             - parseFloat(stageStyle.paddingLeft) - parseFloat(stageStyle.paddingRight);
         const width = Math.min(size, (availableWidth - (cols - 1) * gap) / cols);
+
+        if (height >= size && width >= size) {
+            board.style.removeProperty('--card-width');
+            board.style.removeProperty('--card-height');
+            return;
+        }
         board.style.setProperty('--card-width', Math.max(1, Math.floor(width * 100) / 100) + 'px');
         board.style.setProperty('--card-height', Math.max(1, Math.floor(Math.min(width, height) * 100) / 100) + 'px');
     }

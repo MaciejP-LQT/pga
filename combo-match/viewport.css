@@ -1,0 +1,106 @@
+/* Fixed screens use the visible iframe intersection, independently of its layout viewport. */
+:root {
+    --viewport-top: 0px;
+    --viewport-height: 100vh;
+    --game-back-size: clamp(44px, 6vw, 66px);
+    --game-back-top: max(16px, env(safe-area-inset-top));
+}
+@supports (height: 100dvh) {
+    :root { --viewport-height: 100dvh; }
+}
+#game-viewport {
+    position: fixed;
+    top: var(--viewport-top);
+    left: 0;
+    width: 100%;
+    height: var(--viewport-height);
+    overflow: hidden;
+    transform: translateZ(0);
+    container-type: size;
+}
+@media (min-width: 1921px) {
+    :root { --game-back-size: clamp(54px, 5vw, 76px); }
+}
+@media (min-width: 2561px) {
+    :root {
+        --game-back-size: clamp(64px, 4vw, 92px);
+        --game-back-top: max(24px, env(safe-area-inset-top));
+    }
+}
+/* Reserve the back-button row before the existing board fitter measures both HUDs. */
+@container (max-height: 700px) {
+    @media (orientation: portrait) {
+        body[data-screen="game"] #app {
+            padding-top: calc(var(--game-back-top) + var(--game-back-size) + 8px);
+        }
+    }
+    .screen:not(#screen-home) .start-actions {
+        margin-top: 16px;
+        gap: 8px;
+    }
+}
+.stage-overlay {
+    position: fixed;
+    overflow-y: auto;
+    padding: 16px;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+}
+.stage-overlay-panel {
+    width: 100%;
+    max-width: 520px;
+    flex-shrink: 0;
+    margin: auto;
+}
+/* On phones the mascot absorbs the height reduction, not the buttons or text. */
+@media (max-width: 700px) {
+    @container (max-height: 700px) {
+        #screen-home > .panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            max-height: 100%;
+            flex-shrink: 0;
+            margin: 0 auto;
+            padding: 8px 12px;
+        }
+        #screen-home > .panel > :not(.robot-slot) {
+            flex-shrink: 0;
+        }
+        #screen-home .logo-main {
+            max-width: min(120px, calc(var(--viewport-height) * 0.2));
+        }
+        #screen-home .title {
+            margin: 8px 0 6px;
+        }
+        #screen-home .subtitle {
+            margin-bottom: 6px;
+        }
+        #screen-home .robot-slot {
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+            margin: 0 auto 6px;
+            padding: 0;
+        }
+        #screen-home .robot-img {
+            height: 100%;
+            max-height: 100%;
+            max-width: 210px;
+            object-fit: contain;
+        }
+        #screen-home .start-actions {
+            width: 100%;
+            margin-top: 8px;
+            gap: 6px;
+        }
+        #screen-home .start-actions .btn {
+            min-height: 44px;
+            padding: 6px 14px;
+        }
+        #screen-home .logo-bottom {
+            margin-top: 8px;
+        }
+    }
+}

@@ -19,9 +19,11 @@
 <link rel="preload" href="assets/bg-neon.jpg" as="image">
 <link rel="preload" href="assets/pixel-robot.png" as="image">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="viewport.css?v=iframe-fit-1">
+<script src="js/viewport.js?v=iframe-fit-1" defer></script>
 </head>
 <body>
-
+<div id="game-viewport">
 
 <button id="btn-game-back" class="btn-back btn-back-game"
         type="button" data-back="confirm" aria-label="Wróć do menu">
@@ -354,13 +356,14 @@
 </div>
 
 
+</div>
 <script src="js/texts.js"></script>
 <script src="js/config.js"></script>
 <script src="js/source.js"></script>
 <script src="js/config-check.js"></script>
 <script src="js/screens.js"></script>
 <script src="js/api.js"></script>
-<script src="js/game.js"></script>
+<script src="js/game.js?v=iframe-fit-1"></script>
 <script src="js/flow.js"></script>
 <script>
     /* Jedyny punkt startowy — flow.js spina wszystko */
