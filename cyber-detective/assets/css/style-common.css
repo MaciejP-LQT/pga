@@ -143,6 +143,7 @@ body {
     letter-spacing: 0.12em;
     color: var(--gold);
     text-shadow: 0 0 20px rgba(247, 182, 0, 0.32);
+    word-spacing: -0.5em;
 }.title.small {
     font-size: 28px;
     color: var(--danger);

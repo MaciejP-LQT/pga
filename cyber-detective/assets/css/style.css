@@ -212,6 +212,7 @@ canvas { display: block; width: 100%; height: 100%; }
 .title {
     margin: 0 0 8px; font-size: 38px; letter-spacing: .12em;
     color: var(--gold); text-shadow: 0 0 20px rgba(247,182,0,.32);
+    word-spacing: -0.5em;
 }
 .title.small { font-size: 26px; color: var(--danger); text-shadow: none; }
 .subtitle { margin: 0 0 16px; font-size: 14px; color: var(--muted); line-height: 1.5; }

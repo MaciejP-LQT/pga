@@ -761,6 +761,7 @@ button {
     color: var(--gold);
     text-shadow: 0 0 20px rgba(247, 182, 0, .32);
     word-break: break-word;
+    word-spacing: -0.5em;
 }
 
 .title-blue,
