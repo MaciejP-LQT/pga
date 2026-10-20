@@ -130,6 +130,14 @@ window.Game = (function () {
         return m + ':' + sec.toString().padStart(2, '0');
     }
 
+    function vibrate(duration) {
+        try {
+            if (typeof navigator.vibrate === 'function') navigator.vibrate(duration);
+        } catch {
+            // Opcjonalna wibracja nie może przerwać gry, jeśli przeglądarka ją blokuje.
+        }
+    }
+
     function spawnParticles(x, y, color) {
         const count = 12;
         for (let i = 0; i < count; i++) {
@@ -202,6 +210,10 @@ window.Game = (function () {
             const timeItem = els.time ? els.time.closest('.hud-item') : null;
             if (timeItem) {
                 timeItem.classList.toggle('time-danger', remainingSeconds <= 10);
+            }
+
+            if (remainingSeconds > 0 && remainingSeconds <= 5) {
+                vibrate(80);
             }
 
             if (remainingSeconds <= 0) {
@@ -295,6 +307,8 @@ window.Game = (function () {
 
         card1.classList.add('matched');
         card2.classList.add('matched');
+
+        vibrate(50);
 
         const rect1 = card1.getBoundingClientRect();
         const rect2 = card2.getBoundingClientRect();
