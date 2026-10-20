@@ -222,19 +222,25 @@ window.Flow = (function () {
 
     /* ================= 6. GAMEEND ================= */
 
+    function canClaimPrize() {
+        return CONFIG.API_ENABLED && lastScore >= CONFIG.PRIZE_MIN_SCORE &&
+               !!(lastEnd && lastEnd.eligible && !lastEnd.suspicious);
+    }
+
     Screens.on('gameend', {
         enter: function (data) {
             const score = data.score !== undefined ? data.score : lastScore;
             lastScore = score;
             lastEnd = data.end !== undefined ? data.end : lastEnd;
 
-            const won = score > 0;
+            const hasScore = score > 0;
+            const won = hasScore && score >= CONFIG.PRIZE_MIN_SCORE;
 
             $('end-title').textContent = won ? T('gameend.win.title') : T('gameend.lose.title');
 
             const sc = $('end-score');
-            sc.textContent = won ? T('gameend.win.score', { score: score }) : '';
-            sc.classList.toggle('hidden', !won);
+            sc.textContent = hasScore ? T('gameend.win.score', { score: score }) : '';
+            sc.classList.toggle('hidden', !hasScore);
 
             $('end-message').textContent =
                 !won       ? T('gameend.lose.message')
@@ -243,13 +249,9 @@ window.Flow = (function () {
 
             const isSuspicious = !!(lastEnd && lastEnd.suspicious);
 
-            const canPrize = CONFIG.API_ENABLED && lastEnd && lastEnd.eligible && !isSuspicious;
-            $('btn-prize').classList.toggle('hidden', !canPrize);
+            $('btn-prize').classList.toggle('hidden', !canClaimPrize());
 
-            // const canRank = won && CONFIG.API_ENABLED &&
-            //                 score >= CONFIG.NICK_MIN_SCORE &&
-            //                 !scoreSaved && !isSuspicious;
-            const canRank = won && CONFIG.API_ENABLED &&
+            const canRank = hasScore && CONFIG.API_ENABLED &&
                             lastEnd && lastEnd.rankingActive &&
                             score >= CONFIG.NICK_MIN_SCORE &&
                             !scoreSaved && !isSuspicious;
@@ -259,7 +261,7 @@ window.Flow = (function () {
             refreshRankingCount(true);
 
             const timerEl = $('end-timer');
-            const sec = won ? (CONFIG.WIN_REDIRECT_SEC || 0) : (CONFIG.LOSE_REDIRECT_SEC || 0);
+            const sec = hasScore ? (CONFIG.WIN_REDIRECT_SEC || 0) : (CONFIG.LOSE_REDIRECT_SEC || 0);
 
             if (sec > 0) {
                 let left = sec;
@@ -469,6 +471,8 @@ window.Flow = (function () {
     /* ================= 8. PRIZE ================= */
 
     async function claimAndShowPrize() {
+        if (!canClaimPrize()) return;
+
         const btn = $('btn-prize');
         const label = btn ? btn.textContent : '';
         if (btn) { btn.disabled = true; btn.textContent = T('prize.loading'); }

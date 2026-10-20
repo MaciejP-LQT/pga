@@ -138,6 +138,10 @@ window.CONFIG = {
     NICK_MAX_LENGTH: 20,
     NICK_MIN_SCORE: 1,
 
+    /* Minimalny wynik do odbioru kodu (włącznie).
+       Poniżej progu przycisk „Odbierz punkty” jest ukryty.
+       Nadal wymagana jest zgoda API na wydanie kodu. */
+    PRIZE_MIN_SCORE: 800,
     SHOW_PRIZE_SCREEN: true,
     PRIZE_ALLOW_COPY: true,
     PRIZE_ALLOW_DOWNLOAD: true,
