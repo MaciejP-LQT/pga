@@ -49,6 +49,41 @@ body #app {
         );
     }
 }
+/* Recover up to 32px from the status reserve; taper the gain to avoid a jump at 620px. */
+@media (orientation: portrait) {
+    @container (max-height: 620px) {
+        body[data-screen="game"] #app {
+            --portrait-board: min(
+                calc(100vw - 2 * var(--portrait-edge)),
+                calc(var(--viewport-height) - var(--portrait-top) - var(--portrait-head) - 218px
+                    + clamp(0px, calc(620px - var(--viewport-height)), 32px))
+            );
+        }
+        body[data-screen="game"] #combo {
+            top: calc(100% + 6px);
+            padding: 2px 8px;
+            font-size: 12px;
+            line-height: 1;
+        }
+        body[data-screen="game"] #power-bars {
+            top: calc(100% + 30px);
+            left: 50%;
+            right: auto;
+            width: calc(100vw - 2 * var(--portrait-edge));
+            transform: translateX(-50%);
+            flex-wrap: nowrap;
+            gap: 6px;
+        }
+        body[data-screen="game"] .power-bar {
+            padding: 4px 8px;
+            gap: 6px;
+        }
+        body[data-screen="game"] .power-label {
+            font-size: 11px;
+            line-height: 1.2;
+        }
+    }
+}
 @media (orientation: portrait) and (max-width: 699px) {
     #screen-home {
         --u: min(2.6vw, calc(var(--viewport-height) * 0.02));
