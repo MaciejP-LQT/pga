@@ -12,11 +12,14 @@
 
     <link rel="stylesheet" href="assets/css/style-common.css?v=maze-white-cyan-8">
     <link rel="stylesheet" href="assets/css/style-game-maze.css?v=maze-white-cyan-8">
+    <link rel="stylesheet" href="assets/css/viewport.css?v=iframe-fit-1">
+    <script src="assets/js/viewport.js?v=iframe-fit-1" defer></script>
     
     <!-- <link rel="stylesheet" href="assets/css/style.min.css?v=load-opt-1"> -->
 </head>
 
 <body>
+    <div id="game-viewport">
     <div id="maze-city-fx" aria-hidden="true"><div class="maze-city-scene"><i class="mz-png mzpng-sign-right-off" aria-hidden="true"></i><i class="mz-png mzpng-sign-right-glow" aria-hidden="true"></i><i class="mz-png mzpng-billboard-eye-off" aria-hidden="true"></i><i class="mz-png mzpng-billboard-eye-glow" aria-hidden="true"></i><i class="mz-png mzpng-window-left-off" aria-hidden="true"></i><i class="mz-png mzpng-window-left-glow" aria-hidden="true"></i><i class="mz-png mzpng-window-right-off" aria-hidden="true"></i><i class="mz-png mzpng-window-right-glow" aria-hidden="true"></i></div></div>
     <button aria-label="Wróć do menu" class="btn-back btn-back-game" data-back="confirm" id="btn-game-back"
         type="button">
@@ -295,6 +298,7 @@
                 <button class="btn btn-primary" data-t="confirm.no" id="btn-confirm-no" type="button"></button>
             </div>
         </div>
+    </div>
     </div>
     <script src="assets/js/texts.js"></script>
     <script src="assets/js/config.js"></script>
