@@ -71,6 +71,7 @@ function setup({ minScore, apiEnabled = true, claimResults } = {}) {
     return {
         element,
         config: context.CONFIG,
+        t: context.T,
         navigation,
         get claims() { return claims; },
         finish: (score, end = eligibleEnd) => window.Flow.onGameOver(score, end),
@@ -78,14 +79,14 @@ function setup({ minScore, apiEnabled = true, claimResults } = {}) {
     };
 }
 
-for (const score of [0, 1]) {
-    test(`the default minimum is 1 point: score ${score}`, async () => {
+for (const offset of [-1, 0]) {
+    test(`the default minimum gates score at threshold offset ${offset}`, async () => {
         const env = setup();
-        assert.equal(env.config.PRIZE_MIN_SCORE, 1);
+        const score = env.config.PRIZE_MIN_SCORE + offset;
         env.finish(score);
-        assert.equal(env.element('btn-prize').classList.contains('hidden'), score < 1);
+        assert.equal(env.element('btn-prize').classList.contains('hidden'), offset < 0);
         await env.element('btn-prize').click();
-        assert.equal(env.claims, score < 1 ? 0 : 1);
+        assert.equal(env.claims, offset < 0 ? 0 : 1);
     });
 }
 
@@ -95,6 +96,11 @@ for (const score of [0, 1, 9, 10, 11]) {
         env.finish(score);
         const button = env.element('btn-prize');
         assert.equal(button.classList.contains('hidden'), score < 10);
+        assert.equal(env.element('end-title').textContent,
+            env.t(score < 10 ? 'gameend.lose.title' : 'gameend.win.title'));
+        assert.equal(env.element('end-message').textContent,
+            env.t(score < 10 ? 'gameend.lose.message' : 'gameend.win.subtitle'));
+        assert.equal(env.element('end-score').classList.contains('hidden'), score === 0);
         // Dispatch the handler even when hidden to verify the claim guard.
         await button.click();
         assert.equal(env.claims, score < 10 ? 0 : 1);

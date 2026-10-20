@@ -92,14 +92,14 @@ window.TEXTS = {
     },
     /* ---------- 6. GAMEEND ---------- */
     gameend: {
-        /* gracz nie zdobył punktów */
+        /* gracz nie osiągnął PRIZE_MIN_SCORE lub nie zdobył punktów */
         timer: 'Powrót do menu za {sec} s',
         lose: {
             title:   'KONIEC GRY',
             message: 'Upss! Tym razem się nie udało, ' +
                      'ale nic straconego — spróbuj ponownie.'
         },
-        /* gracz zdobył punkty */
+        /* gracz zdobył punkty i osiągnął PRIZE_MIN_SCORE */
         win: {
             title:     'BRAWO!',
             score:     'Twój wynik: {score}',

@@ -306,14 +306,15 @@ window.Flow = (function () {
             lastScore = score;
             lastEnd = data.end !== undefined ? data.end : lastEnd;
 
-            const won = score > 0;
+            const hasScore = score > 0;
+            const won = hasScore && score >= CONFIG.PRIZE_MIN_SCORE;
 
             $('end-title').textContent = won ? T('gameend.win.title')
                                              : T('gameend.lose.title');
 
             const sc = $('end-score');
-            sc.textContent = won ? T('gameend.win.score', { score }) : '';
-            sc.classList.toggle('hidden', !won);
+            sc.textContent = hasScore ? T('gameend.win.score', { score }) : '';
+            sc.classList.toggle('hidden', !hasScore);
 
             /* po zapisie zmieniamy podtytuł — zachęta do zapisu
                byłaby myląca, skoro przycisk zniknął */
@@ -332,7 +333,7 @@ window.Flow = (function () {
 
             $('btn-prize').classList.toggle('hidden', !canClaimPrize());
 
-            const canRank = won && CONFIG.API_ENABLED &&
+            const canRank = hasScore && CONFIG.API_ENABLED &&
                             lastEnd && lastEnd.rankingActive &&
                             score >= CONFIG.NICK_MIN_SCORE &&
                             !scoreSaved && !isSuspicious;
@@ -345,7 +346,7 @@ window.Flow = (function () {
 
             const timerEl = $('end-timer');
 
-            const sec = won
+            const sec = hasScore
                 ? (CONFIG.WIN_REDIRECT_SEC || 0)
                 : (CONFIG.LOSE_REDIRECT_SEC || 0);
 
