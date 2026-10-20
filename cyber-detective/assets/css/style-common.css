@@ -2110,7 +2110,7 @@ body[data-screen] {
     align-items: center;
     justify-content: center;
     line-height: 1 !important;
-    padding: .0625em 0 0 .0625em;   /* 1/16 em = 1 piksel fontu w prawo i w dol */
+    padding: .6em 0 0 .0625em;   /* 1/16 em = 1 piksel fontu w prawo i w dol */
 }
 /* Compact Maze prize ticket; gameplay and backdrop rules unchanged. */
 #screen-prize.screen{align-items:flex-start;padding-top:max(84px,env(safe-area-inset-top));}
