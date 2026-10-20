@@ -48,10 +48,16 @@ window.Input = (function () {
         if (changed) onDirection(dir);
     }
     function up(e) {
-        if (!moved && e && performance.now() - startTime < 300) {
+        if (touchId === null || e.pointerId !== touchId) return;
+        if (!moved && performance.now() - startTime < 300) {
             const dx = e.clientX - origin.x, dy = e.clientY - origin.y;
             if (Math.hypot(dx, dy) > 12) { lastAxis = null; onDirection(vectorToDirection(dx, dy)); }
         }
+        cancelGesture();
+    }
+    function cancelGesture(e) {
+        if (e && e.pointerId !== touchId) return;
+        /* lostpointercapture moze miec wspolrzedne (0, 0) - nie rozpoznajemy swipe'a. */
         touchId = null; held = null; lastAxis = null; moved = false; hideJoy();
     }
     const KEYS = { arrowup: { x: 0, y: -1 }, arrowdown: { x: 0, y: 1 }, arrowleft: { x: -1, y: 0 }, arrowright: { x: 1, y: 0 },
@@ -75,13 +81,13 @@ window.Input = (function () {
         layer.addEventListener('pointerdown', down, { passive: false });
         layer.addEventListener('pointermove', move, { passive: false });
         layer.addEventListener('pointerup', up);
-        layer.addEventListener('pointercancel', up);
-        layer.addEventListener('lostpointercapture', up);
+        layer.addEventListener('pointercancel', cancelGesture);
+        layer.addEventListener('lostpointercapture', cancelGesture);
         layer.addEventListener('contextmenu', e => e.preventDefault());
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('keyup', onKeyUp);
-        window.addEventListener('blur', () => { keyHeld.clear(); up(); });
+        window.addEventListener('blur', () => { keyHeld.clear(); cancelGesture(); });
     }
-    function show(v) { layer.classList.toggle('hidden', !v); if (!v) up(); }
+    function show(v) { layer.classList.toggle('hidden', !v); if (!v) cancelGesture(); }
     return { init, show, getHeld: () => held };
 })();

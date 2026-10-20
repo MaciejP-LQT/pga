@@ -190,8 +190,10 @@ window.Input = (function () {
     }
 
     function up(e) {
+        if (touchId === null || e.pointerId !== touchId) return;
+
         /* krotkie muzniecie bez przekroczenia dead zone = swipe */
-        if (!moved && e && performance.now() - startTime < 300) {
+        if (!moved && performance.now() - startTime < 300) {
             const dx = e.clientX - stepOrigin.x;
             const dy = e.clientY - stepOrigin.y;
 
@@ -201,6 +203,12 @@ window.Input = (function () {
             }
         }
 
+        cancelGesture();
+    }
+
+    function cancelGesture(e) {
+        if (e && e.pointerId !== touchId) return;
+        /* lostpointercapture moze miec wspolrzedne (0, 0) - nie rozpoznajemy swipe'a. */
         touchId = null;
         held = null;
         firstTurn = true;
@@ -386,8 +394,8 @@ window.Input = (function () {
                 layer.addEventListener('pointerdown',   down, { passive: false });
                 layer.addEventListener('pointermove',   move, { passive: false });
                 layer.addEventListener('pointerup',     up);
-                layer.addEventListener('pointercancel', up);
-                layer.addEventListener('lostpointercapture', up);
+                layer.addEventListener('pointercancel', cancelGesture);
+                layer.addEventListener('lostpointercapture', cancelGesture);
             } else {
                 const wrap = h => e => {
                     const t = e.touches[0] || e.changedTouches[0];
@@ -397,7 +405,7 @@ window.Input = (function () {
                 layer.addEventListener('touchstart', wrap(down), { passive: false });
                 layer.addEventListener('touchmove',  wrap(move), { passive: false });
                 layer.addEventListener('touchend',   wrap(up));
-                layer.addEventListener('touchcancel',wrap(up));
+                layer.addEventListener('touchcancel', () => cancelGesture());
             }
 
             layer.addEventListener('contextmenu', e => e.preventDefault());
@@ -405,23 +413,19 @@ window.Input = (function () {
 
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('keyup', onKeyUp);
-        window.addEventListener('blur', () => { keyHeld.clear(); up(); });
+        window.addEventListener('blur', () => { keyHeld.clear(); cancelGesture(); });
 
         if (CONFIG.GAMEPAD_ENABLED !== false) bindGamepad();
     }
 
     function show(v) {
         if (layer) layer.classList.toggle('hidden', !v);
-        if (!v) up();
+        if (!v) cancelGesture();
     }
 
     function reset() {
-        held = null;
-        touchId = null;
-        firstTurn = true;
-        moved = false;
+        cancelGesture();
         lastPadDir = null;
-        hideJoy();
     }
 
     return { init, show, reset, hasGamepad, getHeld: () => held };

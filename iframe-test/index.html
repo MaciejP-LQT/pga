@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1026">
+    <title>Visa Games — test iframe</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <main class="tester">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">VISA GAMES / NARZĘDZIA</p>
+                <h1>Test gier w iframe</h1>
+                <p class="intro">Sprawdź grę osadzoną na stronie, bez zmieniania jej kodu.</p>
+            </div>
+            <a class="back-link" href="../index.html">Wróć do listy gier ↗</a>
+        </header>
+
+        <div class="layout">
+            <aside class="controls" aria-label="Ustawienia testu">
+                <section class="panel" aria-labelledby="source-title">
+                    <h2 id="source-title">1. Wybierz grę</h2>
+                    <form id="source-form">
+                        <label for="game-select">Gra</label>
+                        <select id="game-select" name="game">
+                            <option value="../delivery-rush/index.html">Delivery Rush</option>
+                            <option value="../cyber-detective/index.html">Cyber Detective</option>
+                            <option value="../combo-match/index.html">Combo Match</option>
+                            <option value="../gaming-challenge/index.html">Icy Tower</option>
+                            <option value="custom">Własny adres</option>
+                        </select>
+                        <label for="game-url">Adres strony z grą</label>
+                        <input id="game-url" name="url" type="text" required spellcheck="false" autocapitalize="off"
+                            aria-describedby="url-help" placeholder="../delivery-rush/index.html">
+                        <p class="help" id="url-help">Adres względny wobec tej strony lub pełny adres HTTP(S). Używaj tylko zaufanych stron.</p>
+                        <button class="primary" type="submit">Wczytaj grę</button>
+                    </form>
+                </section>
+
+                <section class="panel" aria-labelledby="size-title">
+                    <h2 id="size-title">2. Ustaw rozmiar iframe</h2>
+                    <label for="size-preset">Gotowy rozmiar</label>
+                    <select id="size-preset">
+                        <option value="360x640">Mały telefon · 360 × 640</option>
+                        <option value="390x844" selected>Telefon · 390 × 844</option>
+                        <option value="844x390">Telefon poziomo · 844 × 390</option>
+                        <option value="768x1024">Tablet · 768 × 1024</option>
+                        <option value="1024x768">Tablet poziomo · 1024 × 768</option>
+                        <option value="1280x720">Desktop · 1280 × 720</option>
+                        <option value="1920x1080">Full HD · 1920 × 1080</option>
+                        <option value="custom">Własny rozmiar</option>
+                    </select>
+                    <form id="size-form">
+                        <div class="dimensions">
+                            <div>
+                                <label for="frame-width">Szerokość (px)</label>
+                                <input id="frame-width" name="width" type="number" min="160" max="4096" step="1" value="390" required>
+                            </div>
+                            <div>
+                                <label for="frame-height">Wysokość (px)</label>
+                                <input id="frame-height" name="height" type="number" min="160" max="4096" step="1" value="844" required>
+                            </div>
+                        </div>
+                        <div class="button-row">
+                            <button class="primary" type="submit">Zastosuj</button>
+                            <button id="swap-size" type="button">Zamień ↔</button>
+                        </div>
+                    </form>
+                    <p class="help">Możesz też przeciągnąć prawy dolny narożnik ramki. Zmiana rozmiaru nie przeładowuje gry.</p>
+                </section>
+
+                <details class="panel instructions">
+                    <summary>Jak testować?</summary>
+                    <ul>
+                        <li>Uruchom serwer lokalny z głównego katalogu projektu, np. przez Live Server w VS Code, i otwórz <code>/iframe-test/</code>.</li>
+                        <li>Rozmiary oznaczają rzeczywisty obszar iframe w pikselach CSS. Podgląd nie jest skalowany — większa ramka wymaga przewijania.</li>
+                        <li>Kliknij wewnątrz gry, aby przekazać jej sterowanie klawiaturą.</li>
+                        <li>Rozmiar telefonu nie emuluje dotyku ani przeglądarki mobilnej. Do tego użyj trybu urządzeń w narzędziach przeglądarki.</li>
+                        <li>Ramka nie ma sandboxa: lokalne gry zachowują dostęp do pamięci i funkcji przeglądarki tak jak przy zwykłym osadzeniu.</li>
+                        <li>Zewnętrzna strona może blokować osadzanie przez CSP lub X-Frame-Options. Szczegóły błędów sprawdzisz w konsoli przeglądarki.</li>
+                        <li>Jeżeli API gry blokuje lokalny adres przez CORS, uruchom tester na domenie dozwolonej przez API. Tester nie omija tych ograniczeń.</li>
+                    </ul>
+                </details>
+                <p id="file-warning" class="warning" hidden>Strona jest otwarta z dysku. Uruchom ją przez serwer HTTP, aby poprawnie testować ładowanie zasobów i funkcje gier.</p>
+                <noscript><p class="warning">Włącz JavaScript, aby uruchomić tester.</p></noscript>
+            </aside>
+
+            <section class="panel preview" aria-labelledby="preview-title">
+                <header class="preview-header">
+                    <div>
+                        <h2 id="preview-title">Podgląd iframe</h2>
+                        <output id="frame-size" for="frame-width frame-height">390 × 844 px</output>
+                    </div>
+                    <div class="preview-actions">
+                        <button id="reload-game" type="button">Przeładuj</button>
+                        <a id="open-game" class="button" href="../delivery-rush/index.html" target="_blank" rel="noopener noreferrer">Otwórz osobno ↗</a>
+                    </div>
+                </header>
+                <p id="frame-status" class="status" role="status">Przygotowywanie podglądu…</p>
+                <div class="preview-scroll" tabindex="0" role="region" aria-label="Przewijany obszar podglądu gry" aria-describedby="preview-help">
+                    <div id="frame-shell" class="frame-shell">
+                        <iframe id="game-frame" title="Podgląd gry w iframe" allow="autoplay; fullscreen; gamepad"></iframe>
+                    </div>
+                </div>
+                <p class="help preview-help" id="preview-help">Ramka ma własny obszar widoku. Przewijanie tej strony pozwala też testować częściowo widoczną grę.</p>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
