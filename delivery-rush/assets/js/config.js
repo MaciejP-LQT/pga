@@ -214,7 +214,9 @@ window.CONFIG = {
     PAD_DEAD_ZONE: 0.5,
 
     HAPTIC_FEEDBACK: true,
-    HAPTIC_MS: 8,
+    HAPTIC_MS: 8,             // zmiana kierunku
+    HAPTIC_ITEM_MS: 50,       // jedzenie i wzmocnienia
+    HAPTIC_PENALTY_MS: 150,   // czerwony X
 
     SHOW_THUMB_ZONE: true,
     THUMB_ZONE_ON_DESKTOP: false,

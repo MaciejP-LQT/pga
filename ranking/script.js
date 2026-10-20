@@ -24,7 +24,7 @@
     { id: 1, name: "Delivery Rush" },
     { id: 2, name: "Cyber Detective" },
     { id: 3, name: "Combo Match" },
-    { id: 4, name: "Icy Tower" },
+    { id: 4, name: "Gaming Challenge" },
   ];
 
   const app = document.getElementById("ranking-app");

@@ -7,7 +7,7 @@
         { id: 1, name: 'Delivery Rush', image: 'assets/gameId-1-img.png', url: 'delivery-rush/' },
         { id: 2, name: 'Cyber Detective', image: 'assets/gameId-2-img.png', url: 'cyber-detective/' },
         { id: 3, name: 'Combo Match', image: 'assets/gameId-3-img.png', url: 'combo-match/' },
-        { id: 4, name: 'Icy Tower', image: 'assets/gameId-4-img.png', url: 'gaming-challenge/' },
+        { id: 4, name: 'Gaming Challenge', image: 'assets/gameId-4-img.png', url: 'gaming-challenge/' },
     ];
 
     const track = document.getElementById('game-track');

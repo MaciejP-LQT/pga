@@ -372,6 +372,14 @@ window.Game = (function () {
        PUNKTACJA I PRĘDKOŚĆ
        ===================================================== */
     function effStep() { return stepMs * currentFactor; }
+    function vibrate(duration) {
+        if (!CONFIG.HAPTIC_FEEDBACK) return;
+        try {
+            if (typeof navigator.vibrate === 'function') navigator.vibrate(duration);
+        } catch {
+            // Opcjonalna wibracja nie może przerwać gry, jeśli przeglądarka ją blokuje.
+        }
+    }
     function addScore(points) {
         score = Math.max(0, score + points);
         UI.setScore(score);
@@ -428,6 +436,7 @@ window.Game = (function () {
         (żeby nie nachodził na "+punkty", które effects.js dociska w dół). */
     function tagY(y) { return y >= 2 ? y - 1 : y + 1; }
     function eatItem(item) {
+        vibrate(CONFIG.HAPTIC_ITEM_MS);
         const cMult = bumpCombo();
         const bMult = Powerups.scoreMultiplier(power);
         const gained = item.points * cMult * bMult;
@@ -454,6 +463,7 @@ window.Game = (function () {
         respawnItem();
     }
     function hitPenalty(item) {
+        vibrate(CONFIG.HAPTIC_PENALTY_MS);
         Courier.shrink(snake, item.shrink);
         addScore(item.points);
         logScoreEvent(item.points);
@@ -466,6 +476,7 @@ window.Game = (function () {
         items = items.filter(i => i !== item);
     }
     function grabPowerup(hit, x, y) {
+        vibrate(CONFIG.HAPTIC_ITEM_MS);
         const isBoost = hit.def.id === 'boost';
         const color = hit.def.color();
         Effects.burst(x, y, color, isBoost ? 26 : 16, CONFIG.PARTICLE_SPEED*1.5);
