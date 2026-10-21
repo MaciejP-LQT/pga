@@ -92,6 +92,9 @@ window.CONFIG = {
   NICK_MAX_LENGTH: 20,
   NICK_MIN_SCORE: 1,
 
+  /* Minimalny wynik dla komunikatu wygranej i odbioru nagrody (włącznie).
+     Nadal wymagana jest zgoda API na wydanie nagrody. */
+  PRIZE_MIN_SCORE: 200,
   SHOW_PRIZE_SCREEN: true,
   PRIZE_ALLOW_COPY: true,
   PRIZE_ALLOW_DOWNLOAD: true,

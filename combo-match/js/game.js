@@ -380,6 +380,10 @@ window.Game = (function () {
         if (els.stageInfo) els.stageInfo.textContent = T('game.nextStage', { n: currentStage + 1 });
         if (els.stageScore) els.stageScore.textContent = score;
         if (els.stageTime) els.stageTime.textContent = formatTime(timeUsed);
+        if (els.btnStageFinish) {
+            els.btnStageFinish.textContent = T(score >= CONFIG.PRIZE_MIN_SCORE
+                ? 'game.finishBtn' : 'game.finishOnlyBtn');
+        }
 
         // Celebration particles
         for (let i = 0; i < 5; i++) {

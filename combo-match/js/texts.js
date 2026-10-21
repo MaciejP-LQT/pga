@@ -70,6 +70,7 @@ window.TEXTS = {
     stageComplete: "🏆 Etap {n} ukończony!",
     nextStage: "Przechodzisz do Etapu {n}",
     nextStageBtn: "NASTĘPNY ETAP",
+    finishOnlyBtn: "ZAKOŃCZ",
     finishBtn: "ZAKOŃCZ I ODBIERZ NAGRODY",
     timeUp: "Czas minął!",
   },

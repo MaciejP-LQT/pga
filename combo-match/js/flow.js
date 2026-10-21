@@ -275,20 +275,26 @@ window.Flow = (function () {
        6. GAMEEND
        ===================================================== */
 
+    function canClaimPrize() {
+        return CONFIG.API_ENABLED && lastScore >= CONFIG.PRIZE_MIN_SCORE &&
+               !!(lastEnd && lastEnd.eligible && !lastEnd.suspicious);
+    }
+
     Screens.on('gameend', {
         enter(data) {
             const score = data.score !== undefined ? data.score : lastScore;
             lastScore = score;
             lastEnd = data.end !== undefined ? data.end : lastEnd;
 
-            const won = score > 0;
+            const hasScore = score > 0;
+            const won = hasScore && score >= CONFIG.PRIZE_MIN_SCORE;
 
             $('end-title').textContent = won ? T('gameend.win.title')
                                              : T('gameend.lose.title');
 
             const sc = $('end-score');
-            sc.textContent = won ? T('gameend.win.score', { score }) : '';
-            sc.classList.toggle('hidden', !won);
+            sc.textContent = hasScore ? T('gameend.win.score', { score }) : '';
+            sc.classList.toggle('hidden', !hasScore);
 
             $('end-message').textContent =
                 !won       ? T('gameend.lose.message')
@@ -297,10 +303,9 @@ window.Flow = (function () {
 
             const isSuspicious = !!(lastEnd && lastEnd.suspicious);
 
-            const canPrize = CONFIG.API_ENABLED && lastEnd && lastEnd.eligible && !isSuspicious;
-            $('btn-prize').classList.toggle('hidden', !canPrize);
+            $('btn-prize').classList.toggle('hidden', !canClaimPrize());
 
-            const canRank = won && CONFIG.API_ENABLED &&
+            const canRank = hasScore && CONFIG.API_ENABLED &&
                             score >= CONFIG.NICK_MIN_SCORE &&
                             !scoreSaved && !isSuspicious;
 
@@ -311,7 +316,7 @@ window.Flow = (function () {
 
             const timerEl = $('end-timer');
 
-            const sec = won
+            const sec = hasScore
                 ? (CONFIG.WIN_REDIRECT_SEC || 0)
                 : (CONFIG.LOSE_REDIRECT_SEC || 0);
 
@@ -454,6 +459,8 @@ window.Flow = (function () {
        ===================================================== */
 
     async function claimAndShowPrize() {
+        if (!canClaimPrize()) return;
+
         const btn = $('btn-prize');
         const label = btn ? btn.textContent : '';
 
