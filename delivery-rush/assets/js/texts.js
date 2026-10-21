@@ -45,6 +45,7 @@ window.TEXTS = {
             'Steruj skuterem za pomocą ekranu dotykowego, strzałek na klawiaturze lub pada.',
             'Zbieraj zamówienia, każde daje punkty i wydłuża kolejkę toreb.',
             'Nie uderzaj w ścianę ani we własny ogon.',
+            'Zamówienia zbieraj najkrótszą drogą, by budować Combo (do x5) - po 5 skrętach bez odbioru zamówienia mnożnik przepada!',
             'Błękitne pole z zegarem spowalnia grę, a czerwone pole z X odejmuje 3 punkty.',
             'Visa: <b>2x punkty</b>.'
         ],

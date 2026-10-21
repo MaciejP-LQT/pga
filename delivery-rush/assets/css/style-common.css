@@ -1541,6 +1541,7 @@ body {
     border-color: rgba(247, 182, 0, 0.35);
 }#screen-howto.screen .panel {
     background: rgba(12, 15, 48, 0.94);
+    margin-top: max(44px, calc(4vh + 12px));
 }#screen-howto .howto-prizes .howto-title {
     font-size: clamp(14px, 1.9vh, 20px);
     font-weight: 800;
