@@ -140,6 +140,7 @@ window.TEXTS = {
     gameTitle: "COMBO MATCH",
     title: "TWOJA NAGRODA",
     codeLabel: "Twój kod",
+    validOn: "Ważny w dniu: {date}",
     hint: "Skopiuj kod  i wykorzystaj go w GameON. Możesz też pobrać voucher.",
     hintCopyOnly: "Skopiuj kod i wykorzystaj go w GameON.",
     copy: "Kopiuj kod",

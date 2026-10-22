@@ -36,8 +36,8 @@ window.TEXTS = {
         rules: [
             'Steruj detektywem za pomocą ekranu dotykowego, strzałek na klawiaturze lub pada.',
             'Zbieraj lupy i jedzenie — każde daje punkty.',
-            'Unikaj dronów — dotknięcie kosztuje jedno życie.',
-            'Zbierz kartę <b>Visa</b> — przez chwilę masz <b>x2 punkty</b> i <b>ścigasz drony</b> (złapany dron = bonus).',
+            'Unikaj przeciwników — dotknięcie kosztuje jedno życie.',
+            'Zbierz kartę <b>Visa</b> — przez chwilę masz <b>x2 punkty</b> i <b>ścigasz przeciwników</b> (złapany przeciwnik = bonus).',
             'Wyczyść labirynt z lup, aby przejść na kolejny poziom.'
         ],
         prizesTitle: 'NAGRODY',
@@ -115,6 +115,7 @@ window.TEXTS = {
     prize: {
         title:     'TWÓJ KOD',
         codeLabel: 'Twój kod',
+        validOn:   'Ważny w dniu: {date}',
         hint:      'Zapisz kod i wykorzystaj go w aplikacji.',
         screenHint: 'Skopiuj kod i wykorzystaj go w GameON. Możesz też pobrać voucher.',
         screenHintCopyOnly: 'Skopiuj kod i wykorzystaj go w GameON.',

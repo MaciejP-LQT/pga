@@ -674,6 +674,9 @@ window.Flow = (function () {
             $('prize-code').classList.remove('is-empty');
             $('prize-type').textContent = prize.typeName || '';
             $('prize-hint').textContent = T(allowDownload ? 'prize.hint' : 'prize.hintCopyOnly');
+            const validToText = prize.validToText || '';
+            $('prize-validity').textContent = validToText ? T('prize.validOn', { date: validToText }) : '';
+            $('prize-validity').classList.toggle('hidden', !validToText);
 
             $('btn-copy').classList.toggle('hidden', !CONFIG.PRIZE_ALLOW_COPY);
             $('btn-download').classList.toggle('hidden', !allowDownload);

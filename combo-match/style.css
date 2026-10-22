@@ -2542,6 +2542,12 @@ body[data-screen="game"] .btn-back-game {
 #screen-prize .prize-ticket-actions { padding: 4px 0 0; }
 #screen-prize .prize-ticket-actions .start-actions { margin-top: 14px; }
 #screen-prize #prize-timer { font-size: 12px; }
+#screen-prize .prize-validity {
+    margin: 16px 0 0;
+    font: 400 12px/1.4 Inter, system-ui, sans-serif;
+    color: #98a0d0;
+    text-align: center;
+}
 
 @media (max-height: 550px) {
     #screen-prize.screen { padding-top: 72px; }

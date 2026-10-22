@@ -177,7 +177,13 @@ window.Api = (function () {
             const d = (r.data && r.data.data) || {};
             if (!d.code) return { ok: false, code: 'NO_CODE_IN_RESPONSE' };
 
-            session.prize = { code: d.code, codeId: d.codeId, typeId: d.typeId, typeName: d.typeName || null };
+            session.prize = {
+                code: d.code,
+                codeId: d.codeId,
+                typeId: d.typeId,
+                typeName: d.typeName || null,
+                validToText: typeof d.validToText === 'string' ? d.validToText.trim() : ''
+            };
             save(LS_SESSION, session);
             return { ok: true, prize: session.prize, alreadyIssued: !!d.alreadyIssued };
         } finally {

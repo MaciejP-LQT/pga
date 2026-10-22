@@ -4,7 +4,7 @@
    Przepływ:
      startSession()   POST /api/event  -> GameStart
      endGame(score)   POST /api/event  -> GameEnd
-     claimPrize()     POST /api/event  -> GameCodeIssue, ZWRACA KOD
+     claimPrize()     POST /api/event  -> GameCodeIssue, ZWRACA KOD + validToText
      addToRanking()   POST /api/event  -> GameRankingAdd
      loadRanking()    GET  /api/ranking-list
    ========================================================= */
@@ -232,7 +232,8 @@ window.Api = (function () {
                 code: d.code,
                 codeId: d.codeId,
                 typeId: d.typeId,
-                typeName: d.typeName || null
+                typeName: d.typeName || null,
+                validToText: typeof d.validToText === 'string' ? d.validToText.trim() : ''
             };
             save(LS_SESSION, session);
 
