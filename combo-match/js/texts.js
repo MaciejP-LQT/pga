@@ -53,6 +53,11 @@ window.TEXTS = {
       "Każdy etap ma limit czasu — graj szybko i precyzyjnie!",
       "Im dalej zajdziesz, tym więcej kart na planszy i mniej czasu na odkrycie.",
     ],
+    prizesTitle: 'NAGRODY',
+    prizesText: 'Im wyższy wynik w grze, tym wyższa wartość otrzymanego kodu. ' +
+                'W GameON możesz aktywować tylko 1 kod dziennie, ' +
+                'dlatego najlepiej wykorzystaj kod o najwyższej wartości. ' +
+                'Zgromadzoną pulę możesz wymienić na nagrodę lub zbierać dalej.',
   },
 
   /* ---------- 4. RANKING ---------- */

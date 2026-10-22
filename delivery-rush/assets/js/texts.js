@@ -50,10 +50,10 @@ window.TEXTS = {
             'Visa: <b>2x punkty</b>.'
         ],
         prizesTitle: 'PUNKTACJA I NAGRODY',
-        prizesText: 'Im wyższy wynik, tym więcej punktów otrzymasz w GameON. ' +
-                    'Kod odbierzesz bezpośrednio po zakończeniu gry. ' +
-                    'Zgromadzone punkty możesz wymienić na dostępną nagrodę ' +
-                    'lub zachować i zbierać dalej na nagrody z wyższych progów.'
+        prizesText: 'Im wyższy wynik w grze, tym wyższa wartość otrzymanego kodu. ' +
+                    'W GameON możesz aktywować tylko 1 kod dziennie, ' +
+                    'dlatego najlepiej wykorzystaj kod o najwyższej wartości. ' +
+                    'Zgromadzoną pulę możesz wymienić na nagrodę lub zbierać dalej.'
     },
     /* ---------- 4. RANKING ---------- */
     ranking: {

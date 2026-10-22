@@ -841,7 +841,7 @@ button {
    ========================================================= */
 .howto-list {
     list-style: none;
-    margin: 34px 0;
+    margin: 22px 0;
     margin-left: 24px;
     padding: 0;
 }
@@ -874,6 +874,28 @@ button {
 .howto-list b {
     color: var(--gold);
     font-weight: 700;
+}
+
+.howto-prizes {
+    background: none;
+    border: 0;
+    border-top: 1px solid rgba(145, 155, 255, 0.25);
+    border-radius: 0;
+    box-shadow: none;
+    margin: 20px 0 0;
+    padding: 18px 0 0;
+}
+.howto-prizes .howto-title {
+    color: var(--gold);
+    margin-bottom: 8px;
+}
+.howto-prizes-text {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #c5d0e2;
+    margin: 0 0 12px;
+    text-align: center;
+    padding: 6px 12px;
 }
 
 /* =========================================================

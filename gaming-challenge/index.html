@@ -6,6 +6,23 @@
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=yes, viewport-fit=cover">
     <title>Gaming Challange</title>
     <style>
+
+      @font-face {
+          font-family: "PressStart2P";
+          src: url("TemplateData/PressStart2P.woff2") format("woff2");
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+      }
+
+      @font-face {
+          font-family: "Inter";
+          src: url("TemplateData/Inter_24pt-SemiBold.woff2") format("woff2");
+          font-weight: 600 800;
+          font-style: normal;
+          font-display: swap;
+      }
+
       html, body {
         margin: 0; padding: 0;
         width: 100%; height: 100%;
@@ -16,6 +33,9 @@
         -webkit-touch-callout: none;
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior: none;
+
+            font-family: "Inter", system-ui, sans-serif;
+                 font-weight: 600 800;
       }
       #unity-canvas {
         position: fixed; left: 0; top: 0;
@@ -26,14 +46,40 @@
         touch-action: none;
       }
       #loading {
-        position: fixed; left: 50%; top: 50%;
-        width: 60%; max-width: 320px; height: 8px;
-        transform: translate(-50%, -50%);
-        background: rgba(255,255,255,0.15);
-        border-radius: 4px; overflow: hidden;
+        position: fixed; inset: 0; z-index: 10;
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: space-between; box-sizing: border-box;
+        padding: max(28px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+        background: radial-gradient(ellipse at center, #282039 0%, #11101a 65%, #09090e 100%);
+        color: #fff; font-family: Arial, sans-serif;
       }
-      #loading-fill { width: 0%; height: 100%; background: #fff; }
+      .partner-logo { width: 200px; height: auto; max-height: 90px;
+        object-fit: contain;  }
+      .loading-center { width: min(100%, 320px); text-align: center; }
+      .loading-title { 
+        font-family: "PixelPL", "PressStart2P", monospace !important;
+        margin: 0 0 20px; color: #ffcf32;
+        font-size: clamp(22px, 6vw, 32px);
+            line-height: clamp(32px, 7vw, 42px); font-weight: 900;
+        letter-spacing: 3px; text-shadow: 3px 3px 0 #6d321a;
+      text-transform: uppercase; }
+      .loading-track { height: 18px; padding: 4px; border: 2px solid #ffcf32;
+        background: #08080e; box-shadow: 4px 4px 0 #000; }
+      #loading-fill { width: 0%; height: 100%;
+        background: repeating-linear-gradient(90deg, #ffca28 0px, #ffca28 14px, #d88a13 14px, #d88a13 17px, transparent 17px, transparent 21px);
+        transition: width .18s linear; }
+      .loading-caption { display: flex; justify-content: space-between;
+        margin-top: 14px; font-size: 12px; letter-spacing: 1px; color: #ddd8e5; }
+      .brand-logo { width: 50px;  height: auto; object-fit: contain; }
+      @media (max-height: 380px) {
+        #loading { padding: 12px 24px; }
+
+        .loading-title { font-size: 20px; margin-bottom: 10px; }
+      
+      }
+      @media (prefers-reduced-motion: reduce) { #loading-fill { transition: none; } }
       #error {
+        z-index: 20;
         display: none;
         position: fixed; left: 0; right: 0; top: 0;
         padding: 10px; color: #fff; background: #b00020;
@@ -43,7 +89,17 @@
   </head>
   <body>
     <canvas id="unity-canvas" tabindex="-1"></canvas>
-    <div id="loading"><div id="loading-fill"></div></div>
+    <div id="loading" role="status" aria-label="Ładowanie gry">
+      <img class="partner-logo" src="TemplateData/MSIxIntel_transparent.png" alt="MSI x Intel">
+      <div class="loading-center">
+        <h1 class="loading-title">Gaming Challenge</h1>
+        <div class="loading-track" role="progressbar" aria-label="Postęp ładowania" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="loading-fill"></div>
+        </div>
+        <div class="loading-caption"><span id="loading-label">ŁADOWANIE GRY</span><span id="loading-percent">0%</span></div>
+      </div>
+      <img class="brand-logo" src="TemplateData/KFC.png" alt="KFC">
+    </div>
     <div id="error"></div>
 
     <script>
@@ -67,9 +123,9 @@
       var buildUrl = "Build";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/a7cc2ce67bec13d4521fc8adc1c2748c.data.unityweb",
-        frameworkUrl: buildUrl + "/ca18687d775f0bea97e13f8e602663b4.framework.js.unityweb",
-        codeUrl: buildUrl + "/52e5043d8e361e19aa2c31417bbd247b.wasm.unityweb",
+        dataUrl: buildUrl + "/ae863209c3f06ee3bb9ef59673ed2434.data.unityweb",
+        frameworkUrl: buildUrl + "/582149a2a5236afa4b535e0910e83b79.framework.js.unityweb",
+        codeUrl: buildUrl + "/a13fb6009112fb79d22b609c5821b34f.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "LiquidThread",
         productName: "Gaming Challange",
@@ -89,7 +145,11 @@
       script.src = buildUrl + "/5e80df0be21cf4119af132c0b7238a20.loader.js";
       script.onload = function () {
         createUnityInstance(canvas, config, function (progress) {
-          fill.style.width = (100 * progress) + "%";
+          var percent = Math.max(0, Math.min(100, Math.round(progress * 100)));
+          fill.style.width = percent + "%";
+          document.querySelector("#loading-percent").textContent = percent + "%";
+          document.querySelector(".loading-track").setAttribute("aria-valuenow", percent);
+          if (percent === 100) document.querySelector("#loading-label").textContent = "URUCHAMIANIE GRY";
         }).then(function (unityInstance) {
           loading.style.display = "none";
           canvas.focus();   // klawiatura/pad działają bez klikania w grę
