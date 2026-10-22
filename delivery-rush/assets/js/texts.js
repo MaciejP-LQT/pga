@@ -136,6 +136,7 @@ window.TEXTS = {
     prize: {
         title:      'TWÓJ KOD',
         codeLabel:  'Kod nagrody',
+        validOn:    'Ważny w dniu: {date}',
         hint:       'Skopiuj kod albo pobierz go, żeby nie zgubić nagrody.',
         noCode:     'Nagrody zostały na dziś wyczerpane.',  
         copy:       'Kopiuj kod',

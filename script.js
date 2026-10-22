@@ -1,13 +1,17 @@
 (() => {
     'use strict';
 
+    // Do gier przekazujemy wyłącznie hideDownload; bez parametru adresy pozostają bez zmian.
+    const hideDownload = new URLSearchParams(window.location.search).get('hideDownload');
+    const gameQuery = hideDownload === null ? '' : `?${new URLSearchParams({ hideDownload })}`;
+
     // Adresy są względne wobec Hub/index.html. Uzupełnij null dopiero po ustaleniu adresu gry.
     // Grafiki przypisujemy według GameID; pliki 2 i 4 w dostarczonych materiałach są identyczne.
     const GAMES = [
-        { id: 1, name: 'Delivery Rush', image: 'assets/gameId-1-img.png', url: 'delivery-rush/' },
-        { id: 2, name: 'Cyber Detective', image: 'assets/gameId-2-img.png', url: 'cyber-detective/' },
-        { id: 3, name: 'Combo Match', image: 'assets/gameId-3-img.png', url: 'combo-match/' },
-        { id: 4, name: 'Gaming Challenge', image: 'assets/gameId-4-img.png', url: 'gaming-challenge/' },
+        { id: 1, name: 'Delivery Rush', image: 'assets/gameId-1-img.png', url: `delivery-rush/${gameQuery}` },
+        { id: 2, name: 'Cyber Detective', image: 'assets/gameId-2-img.png', url: `cyber-detective/${gameQuery}` },
+        { id: 3, name: 'Combo Match', image: 'assets/gameId-3-img.png', url: `combo-match/${gameQuery}` },
+        { id: 4, name: 'Gaming Challenge', image: 'assets/gameId-4-img.png', url: `gaming-challenge/${gameQuery}` },
     ];
 
     const track = document.getElementById('game-track');

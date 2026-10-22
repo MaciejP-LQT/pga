@@ -6,6 +6,7 @@
      pasek boosta z logo Visa + "x2"
    - SLOW: ten sam komunikat w wersji niebieskiej
    Wyglad -> style-game-maze.css (sekcja "MAZE v6 - VISA x2").
+   Teksty -> texts.js. Zasady wyswietla flow.js bez nadpisywania.
    Nie zmienia mechaniki gry.
    ========================================================= */
 (function () {
@@ -13,24 +14,6 @@
     var hintTimer = null;
     var pops = {};
 
-    /* domyslne teksty - uzywane tylko, gdy brak klucza w texts.js */
-    var FALLBACK = {
-        visaPop: 'x{mult} PUNKTY',
-        visaTag: 'VISA x{mult}',
-        visaBar: 'x{mult}',
-        slowPop: 'SPOWOLNIENIE',
-        /* ekran ZASADY GRY */
-        visaRule:  'Zbierz kartę <b>Visa</b> — przez chwilę masz <b>x{mult} punkty</b> ' +
-                   'i <b>ścigasz drony</b> (złapany dron = bonus). Błękitne pole je spowalnia.',
-        visaChase: 'ścigasz drony'
-    };
-    function tx(key, vars) {
-        var g = window.TEXTS && window.TEXTS.game;
-        if (g && g[key] != null) return T('game.' + key, vars);
-        return String(FALLBACK[key] || key).replace(/\{(\w+)\}/g, function (m, k) {
-            return vars && vars[k] !== undefined ? vars[k] : m;
-        });
-    }
     function mult() { return CONFIG.BOOST_MULTIPLIER || 2; }
     function isTouch() { return matchMedia('(pointer: coarse)').matches; }
 
@@ -77,8 +60,8 @@
         var el = getPop(kind);
         if (!el) return;
         el.querySelector('span').textContent = kind === 'boost'
-            ? tx('visaPop', { mult: mult() })
-            : tx('slowPop');
+            ? T('game.visaPop', { mult: mult() })
+            : T('game.slowPop');
         el.classList.remove('show');
         void el.offsetWidth;            /* restart animacji */
         el.classList.add('show');
@@ -114,24 +97,11 @@
         if (!label) return;
         label.removeAttribute('data-t');   /* router tekstow nie nadpisze logo */
         label.innerHTML = '<img class="power-logo" src="' + CONFIG.LOGO_MAIN_FILE + '" alt="Visa">' +
-            '<span>' + tx('visaBar', { mult: mult() }) + '</span>';
+            '<span>' + T('game.visaBar', { mult: mult() }) + '</span>';
     }
 
-    /* ---------------- ekran ZASADY GRY: Visa = x2 + poscig ---------------- */
-    function patchHowto() {
-        var rules = document.getElementById('howto-rules');
-        if (rules) {
-            var lis = rules.querySelectorAll('li');
-            for (var i = 0; i < lis.length; i++) {
-                var t = lis[i].textContent.toLowerCase();
-                if (lis[i].dataset.mzVisa) break;
-                if (t.indexOf('ścig') >= 0 || t.indexOf('złote pole') >= 0 || t.indexOf('visa') >= 0) {
-                    lis[i].innerHTML = tx('visaRule', { mult: mult() });
-                    lis[i].dataset.mzVisa = '1';
-                    break;
-                }
-            }
-        }
+    /* ---------------- legenda ZASAD GRY: Visa = x2 + poscig ---------------- */
+    function patchLegend() {
         var legend = document.getElementById('legend');
         if (legend) {
             /* token = lupa (jak na planszy) - usun stara kropke, zostaw ikone + wartosc */
@@ -153,21 +123,20 @@
                 var li = items[j];
                 var b = li.querySelector('b');
                 if (!b || li.dataset.mzVisa) continue;
-                if (li.classList.contains('is-boost') || /ścig/i.test(b.textContent)) {
+                if (li.classList.contains('is-boost')) {
                     li.classList.add('is-boost', 'mz-visa-legend');
-                    b.innerHTML = 'x' + mult() + '<small>' + tx('visaChase') + '</small>';
+                    b.innerHTML = 'x' + mult() + '<small>' + T('howto.chaseLabel') + '</small>';
                     li.dataset.mzVisa = '1';
                 }
             }
         }
     }
-    function watchHowto() {
-        patchHowto();
-        if (!window.MutationObserver) return;
-        ['howto-rules', 'legend'].forEach(function (id) {
-            var el = document.getElementById(id);
-            if (el) new MutationObserver(patchHowto).observe(el, { childList: true });
-        });
+    function watchLegend() {
+        patchLegend();
+        var legend = document.getElementById('legend');
+        if (legend && window.MutationObserver) {
+            new MutationObserver(patchLegend).observe(legend, { childList: true });
+        }
     }
 
     function install() {
@@ -181,7 +150,7 @@
         UI.hideClearPop = hideClearPop;
         UI.hideVisaPop = hidePowerPop;
         /* dopisek przy punktach w trakcie x2 - uzywa game.js */
-        UI.visaTag = function () { return tx('visaTag', { mult: mult() }); };
+        UI.visaTag = function () { return T('game.visaTag', { mult: mult() }); };
 
         var originalSetPowerups = UI.setPowerups;
         UI.setPowerups = function (power) {
@@ -193,7 +162,7 @@
             if (!power) hidePowerPop();
         };
         applyVisaBar();
-        watchHowto();
+        watchLegend();
         return true;
     }
     if (!install()) document.addEventListener('DOMContentLoaded', install, { once: true });

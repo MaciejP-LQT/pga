@@ -268,6 +268,7 @@ window.CONFIG = {
     PRIZE_MIN_SCORE: 100,
     SHOW_PRIZE_SCREEN: true,
     PRIZE_ALLOW_COPY: true,
+    /* ?hideDownload=1 w URL ukrywa przycisk „Pobierz” także przy włączonej fladze. */
     PRIZE_ALLOW_DOWNLOAD: true,
 
     /* =====================================================

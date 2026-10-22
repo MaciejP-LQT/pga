@@ -35,17 +35,17 @@ window.TEXTS = {
         title: 'ZASADY GRY',
         rules: [
             'Steruj detektywem za pomocą ekranu dotykowego, strzałek na klawiaturze lub pada.',
-            'Zbieraj tokeny i jedzenie — każde daje punkty.',
+            'Zbieraj lupy i jedzenie — każde daje punkty.',
             'Unikaj dronów — dotknięcie kosztuje jedno życie.',
-            'Złote pole pozwala <b>ścigać drony</b>, błękitne je spowalnia.',
-            'Wyczyść labirynt z tokenów, aby przejść na kolejny poziom.'
+            'Zbierz kartę <b>Visa</b> — przez chwilę masz <b>x2 punkty</b> i <b>ścigasz drony</b> (złapany dron = bonus).',
+            'Wyczyść labirynt z lup, aby przejść na kolejny poziom.'
         ],
         prizesTitle: 'NAGRODY',
         prizesText: 'Im wyższy wynik w grze, tym wyższa wartość otrzymanego kodu. ' +
                     'W GameON możesz aktywować tylko 1 kod dziennie, ' +
                     'dlatego najlepiej wykorzystaj kod o najwyższej wartości. ' +
                     'Zgromadzoną pulę możesz wymienić na nagrodę lub zbierać dalej.',
-        chaseLabel:  'ścigasz'
+        chaseLabel:  'ścigasz drony'
     },
 
     ranking: {
@@ -64,7 +64,9 @@ window.TEXTS = {
         hintMouse:  'Strzałki, WASD albo przeciągnij myszą',
         hintPad:    'Steruj D-padem lub gałką',
         visaPop:    'VISA x{mult} PUNKTY',
+        visaTag:    'VISA x{mult}',
         visaBar:    'VISA x{mult}',
+        slowPop:    'SPOWOLNIENIE',
         caught:     'ZŁAPANY!',
         mazeClear:  'POZIOM {level} ✔',
         levelClear: 'POZIOM {level}',
@@ -115,6 +117,7 @@ window.TEXTS = {
         codeLabel: 'Twój kod',
         hint:      'Zapisz kod i wykorzystaj go w aplikacji.',
         screenHint: 'Skopiuj kod i wykorzystaj go w GameON. Możesz też pobrać voucher.',
+        screenHintCopyOnly: 'Skopiuj kod i wykorzystaj go w GameON.',
         voucherHint: 'Wykorzystaj ten kod w GameON.',
         copy:      'Kopiuj',
         copied:    'Skopiowano!',

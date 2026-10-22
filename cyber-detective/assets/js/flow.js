@@ -136,7 +136,9 @@ window.Flow = (function () {
             const list = $('howto-rules');
             if (list) {
                 const rules = T('howto.rules');
+                console.log('howto.rules', rules);
                 list.innerHTML = Array.isArray(rules)
+
                     ? rules.map(function (r) { return '<li>' + r + '</li>'; }).join('')
                     : '';
             }
@@ -509,14 +511,17 @@ window.Flow = (function () {
             const prize = (data && data.prize) || Api.getPrize();
             if (!prize) { Screens.back('gameend'); return; }
 
+            const allowDownload = CONFIG.PRIZE_ALLOW_DOWNLOAD &&
+                new URLSearchParams(location.search).get('hideDownload') !== '1';
+
             $('prize-code').textContent = prize.code;
             $('prize-code').style.setProperty('--voucher-code-size', Math.min(16, 150 / Math.max(1, Array.from(String(prize.code)).length)) + 'cqw');
             $('prize-code').classList.remove('is-empty');
             $('prize-type').textContent = prize.typeName || '';
-            $('prize-hint').textContent = T('prize.screenHint');
+            $('prize-hint').textContent = T(allowDownload ? 'prize.screenHint' : 'prize.screenHintCopyOnly');
 
             $('btn-copy').classList.toggle('hidden', !CONFIG.PRIZE_ALLOW_COPY);
-            $('btn-download').classList.toggle('hidden', !CONFIG.PRIZE_ALLOW_DOWNLOAD);
+            $('btn-download').classList.toggle('hidden', !allowDownload);
             $('copy-label').textContent = T('prize.copy');
 
             prepareVoucher(prize.code, prize.typeName);

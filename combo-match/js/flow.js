@@ -667,13 +667,16 @@ window.Flow = (function () {
             const prize = (data && data.prize) || Api.getPrize();
             if (!prize) { Screens.back('gameend'); return; }
 
+            const allowDownload = CONFIG.PRIZE_ALLOW_DOWNLOAD &&
+                new URLSearchParams(location.search).get('hideDownload') !== '1';
+
             $('prize-code').textContent = prize.code;
             $('prize-code').classList.remove('is-empty');
             $('prize-type').textContent = prize.typeName || '';
-            $('prize-hint').textContent = T('prize.hint');
+            $('prize-hint').textContent = T(allowDownload ? 'prize.hint' : 'prize.hintCopyOnly');
 
             $('btn-copy').classList.toggle('hidden', !CONFIG.PRIZE_ALLOW_COPY);
-            $('btn-download').classList.toggle('hidden', !CONFIG.PRIZE_ALLOW_DOWNLOAD);
+            $('btn-download').classList.toggle('hidden', !allowDownload);
             $('copy-label').textContent = T('prize.copy');
 
             prepareVoucher(prize.code);

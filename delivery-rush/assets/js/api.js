@@ -5,7 +5,7 @@
      startSession()   POST /api/event  -> GameStart, zwraca token sesji
      endGame(score, durationMs, events)
                       POST /api/event  -> GameEnd, zwraca codeEligible + prizeName
-     claimPrize()     POST /api/event  -> GameCodeIssue, ZWRACA KOD
+     claimPrize()     POST /api/event  -> GameCodeIssue, ZWRACA KOD + validToText
      addToRanking()   POST /api/event  -> GameRankingAdd (moderacja po stronie API)
      loadRanking()    GET  /api/ranking-list
 
@@ -259,7 +259,8 @@ window.Api = (function () {
                 code: d.code,
                 codeId: d.codeId,
                 typeId: d.typeId,
-                typeName: d.typeName || null
+                typeName: d.typeName || null,
+                validToText: typeof d.validToText === 'string' ? d.validToText.trim() : ''
             };
             save(LS_SESSION, session);
 

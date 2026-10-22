@@ -2083,6 +2083,7 @@ body[data-screen='prize'] #screen-prize.screen #prize-code {display:block;font-f
 #screen-prize .prize-ticket-actions {padding:4px 0 0;}
 #screen-prize .prize-ticket-actions .start-actions {margin-top:14px;}
 #screen-prize #prize-timer {font-size:12px;}
+#screen-prize .prize-validity {margin:16px 0 0;font:400 12px/1.4 Inter,system-ui,sans-serif;color:#98a0d0;text-align:center;}
 @media(max-height:550px){#screen-prize.screen{padding-top:72px;}#screen-prize.screen .panel.prize-panel{margin:0 auto;}}
 /* Saved ranking state: scoped to the add-ranking screen only. */
 #screen-addrank.rank-saved #addrank-box,

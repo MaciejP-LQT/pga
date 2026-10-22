@@ -26,6 +26,7 @@ window.Flow = (function () {
     const $ = id => document.getElementById(id);
     const PRIZE_COPY = {
         screenHint: 'Skopiuj kod i wykorzystaj go w GameON. Możesz też pobrać voucher.',
+        screenHintCopyOnly: 'Skopiuj kod i wykorzystaj go w GameON.',
         voucherHint: 'Wykorzystaj ten kod w GameON.'
     };
 
@@ -571,15 +572,21 @@ window.Flow = (function () {
             const prize = (data && data.prize) || Api.getPrize();
             if (!prize) { Screens.back('gameend'); return; }
 
+            const allowDownload = CONFIG.PRIZE_ALLOW_DOWNLOAD &&
+                new URLSearchParams(location.search).get('hideDownload') !== '1';
+
             $('prize-code').textContent = prize.code;
             const codeLength = Array.from(String(prize.code)).length;
             $('prize-code').style.setProperty('--voucher-code-size', Math.min(10.22, 120 / Math.max(1, codeLength)) + 'cqw');
             $('prize-code').classList.remove('is-empty');
             $('prize-type').textContent = prize.typeName || '';
-            $('prize-hint').textContent = PRIZE_COPY.screenHint;
+            $('prize-hint').textContent = allowDownload ? PRIZE_COPY.screenHint : PRIZE_COPY.screenHintCopyOnly;
+            const validToText = prize.validToText || '';
+            $('prize-validity').textContent = validToText ? T('prize.validOn', { date: validToText }) : '';
+            $('prize-validity').classList.toggle('hidden', !validToText);
 
             $('btn-copy').classList.toggle('hidden', !CONFIG.PRIZE_ALLOW_COPY);
-            $('btn-download').classList.toggle('hidden', !CONFIG.PRIZE_ALLOW_DOWNLOAD);
+            $('btn-download').classList.toggle('hidden', !allowDownload);
             $('copy-label').textContent = T('prize.copy');
 
             prepareVoucher(prize.code, prize.typeName);
