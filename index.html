@@ -6,10 +6,22 @@
     <meta name="theme-color" content="#070a26">
     <meta name="description" content="Visa Games — wybierz swoją grę.">
     <title>Visa Games — Game Hub</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P205KW4Y4T"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-P205KW4Y4T');
+    </script>
+
+
     <link rel="preload" href="fonts/PressStart2P.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/Inter_24pt-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js?v=hide-download-1" defer></script>
+    <script src="script.js?v=hide-download-1&vr=1" defer></script>
 </head>
 <body>
     <main class="hub" aria-label="Wybór gry">
@@ -49,6 +61,7 @@
             <p class="controls-hint">Wybierz miniaturę <span aria-hidden="true">·</span> przesuń lub użyj strzałek / joysticka / krzyżaka</p>
         </section>
         <noscript><p class="noscript">Włącz JavaScript, aby wybrać grę.</p></noscript>
+        <footer class="hub-footer"><a href="https://game-on.kfc.pl/pl/regulations" target="_blank" rel="noopener noreferrer">Regulamin</a> GameOn.</footer>
     </main>
 </body>
 </html>

@@ -497,7 +497,8 @@ window.Flow = (function () {
         BG: 'assets/bg-neon.jpg',
         LOGO_VISA: 'assets/logo-visa.png',
         LOGO_PARTNER: 'assets/logo-kfc.png',
-        FONT_PIXEL: '"PressStart2P", monospace'
+        FONT_PIXEL: '"PressStart2P", monospace',
+        FONT_CODE: '"Fira Code", Consolas, "Courier New", monospace'
     };
     let voucherFile = null;
     let voucherToken = 0;
@@ -543,7 +544,7 @@ window.Flow = (function () {
         ctx.closePath();
     }
 
-    async function drawVoucher(code) {
+    async function drawVoucher(code, validToText) {
         const W = VOUCHER.W, H = VOUCHER.H;
         const c = document.createElement('canvas');
         c.width = W; c.height = H;
@@ -560,6 +561,7 @@ window.Flow = (function () {
                 document.fonts.load('600 34px Inter')
             ]);
         } catch (e) {}
+        try { await document.fonts.load('600 92px ' + VOUCHER.FONT_CODE, code); } catch (e) {}
 
         x.fillStyle = '#0a0d33';
         x.fillRect(0, 0, W, H);
@@ -575,7 +577,7 @@ window.Flow = (function () {
         x.fillStyle = shade;
         x.fillRect(0, 0, W, H);
 
-        const L = 90, TOP = 56, BW = W - 180, BH = 740, notchY = TOP + 230;
+        const L = 90, TOP = 56, BW = W - 180, BH = validToText ? 804 : 740, notchY = TOP + 230;
         voucherTicketPath(x, L, TOP, BW, BH, 36, notchY, 34);
         const card = x.createLinearGradient(0, TOP, 0, TOP + BH);
         card.addColorStop(0, 'rgba(22,28,82,.94)');
@@ -637,7 +639,7 @@ window.Flow = (function () {
         x.stroke();
         x.setLineDash([]);
         x.fillStyle = '#FFC22E';
-        x.font = '800 92px Consolas, "Courier New", monospace';
+        x.font = '600 92px ' + VOUCHER.FONT_CODE;
         while (x.measureText(code).width > boxW - 70) {
             x.font = x.font.replace(/(\d+)px/, (m, n) => (n - 2) + 'px');
         }
@@ -647,17 +649,24 @@ window.Flow = (function () {
         x.font = '400 34px Inter, system-ui, sans-serif';
         x.textBaseline = 'alphabetic';
         wrapText(x, T('prize.hint'), W / 2, boxY + boxH + 80, boxW, 46);
+        if (validToText) {
+            x.fillStyle = '#98a0d0';
+            x.font = '400 26px Inter, system-ui, sans-serif';
+            x.fillText(T('prize.validOn', { date: validToText }), W / 2, TOP + BH - 28, boxW);
+        }
         return c;
     }
 
-    function prepareVoucher(code) {
+    function prepareVoucher(code, rewardName, validToText) {
         voucherFile = null;
         const token = ++voucherToken;
-        drawVoucher(code).then(canvas => {
+        const gameTitle = T('home.title').replace(/<[^>]*>/g, '');
+        const fileName = `${gameTitle}-${rewardName || ''}-${validToText || ''}.png`.replace(/\s+/g, '-');
+        drawVoucher(code, validToText).then(canvas => {
             canvas.toBlob(blob => {
                 // Starszy render nie może nadpisać kodu z kolejnej gry.
                 if (!blob || token !== voucherToken) return;
-                voucherFile = new File([blob], 'nagroda-' + code + '.png', { type: 'image/png' });
+                voucherFile = new File([blob], fileName, { type: 'image/png' });
             }, 'image/png');
         }).catch(error => console.error('[Flow] voucher', error));
     }
@@ -682,7 +691,7 @@ window.Flow = (function () {
             $('btn-download').classList.toggle('hidden', !allowDownload);
             $('copy-label').textContent = T('prize.copy');
 
-            prepareVoucher(prize.code);
+            prepareVoucher(prize.code, prize.typeName, validToText);
 
             Screens.watchIdle(CONFIG.IDLE_TIMEOUT_SEC, () => Screens.back('gameend'),
                 { elId: 'prize-timer', textKey: 'common.idleTimer' });

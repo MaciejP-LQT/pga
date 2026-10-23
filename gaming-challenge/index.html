@@ -123,9 +123,9 @@
       var buildUrl = "Build";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/3102b807ef8e3e2cb2c1f1c7b58922dd.data.unityweb",
+        dataUrl: buildUrl + "/ed980f517f31c71ca787a50fc2aacb83.data.unityweb",
         frameworkUrl: buildUrl + "/2d4063789a2e007ab86d1d54fd5f0b7a.framework.js.unityweb",
-        codeUrl: buildUrl + "/36d16e510dc9c45cfeb2a6e5a83b8c69.wasm.unityweb",
+        codeUrl: buildUrl + "/deb76545bf8c0319cc05bb8521047234.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "LiquidThread",
         productName: "Gaming Challange",
@@ -142,7 +142,7 @@
       window.addEventListener("orientationchange", function () { setTimeout(resize, 200); });
 
       var script = document.createElement("script");
-      script.src = buildUrl + "/1b306f07b92eac000705f7cdf355454e.loader.js";
+      script.src = buildUrl + "/36f572a62177d9ae940c917fa905ffc3.loader.js";
       script.onload = function () {
         createUnityInstance(canvas, config, function (progress) {
           var percent = Math.max(0, Math.min(100, Math.round(progress * 100)));

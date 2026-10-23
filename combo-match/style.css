@@ -2,6 +2,15 @@
    FONTY
    ========================================================= */
 @font-face {
+    font-family: 'Fira Code';
+    src: url('fonts/FiraCode-SemiBold.woff2') format('woff2'),
+        url('fonts/FiraCode-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
     font-family: 'PressStart2P';
     src: url('fonts/PressStart2P.woff2') format('woff2'),
         url('fonts/PressStart2P.woff') format('woff');
@@ -2507,9 +2516,9 @@ body[data-screen="game"] .btn-back-game {
 
 #screen-prize #prize-code {
     display: block;
-    font-family: Consolas, 'Courier New', monospace;
+    font-family: 'Fira Code', Consolas, 'Courier New', monospace;
     font-size: clamp(12px, 8cqw, 34px);
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: 0;
     white-space: nowrap;
     word-break: normal;

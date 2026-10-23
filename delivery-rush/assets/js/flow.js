@@ -589,7 +589,7 @@ window.Flow = (function () {
             $('btn-download').classList.toggle('hidden', !allowDownload);
             $('copy-label').textContent = T('prize.copy');
 
-            prepareVoucher(prize.code, prize.typeName);
+            prepareVoucher(prize.code, prize.typeName, validToText);
             startPrizeIdle();
 
             // Screens.watchIdle(CONFIG.IDLE_TIMEOUT_SEC, () => Screens.back('gameend'),
@@ -637,7 +637,8 @@ window.Flow = (function () {
         W: 1080, H: 1350,
         BG: 'assets/images/home-bg.jpg',
         VISA: 'assets/images/logo-visa.png',
-        KFC: 'assets/images/logo-kfc.png'
+        KFC: 'assets/images/logo-kfc.png',
+        FONT_CODE: '"Fira Code", Consolas, "Courier New", monospace'
     };
     let voucherFile = null;
     let voucherRenderId = 0;
@@ -655,14 +656,14 @@ window.Flow = (function () {
         const w = img.naturalWidth * scale, h = img.naturalHeight * scale;
         ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
     }
-    function voucherFit(ctx, text, size, family, width) {
+    function voucherFit(ctx, text, size, family, width, weight = 400) {
         do {
-            ctx.font = size + 'px ' + family;
+            ctx.font = weight + ' ' + size + 'px ' + family;
             if (ctx.measureText(text).width <= width || size <= 12) break;
             size -= 2;
         } while (true);
     }
-    async function drawVoucher(code, rewardName) {
+    async function drawVoucher(code, rewardName, validToText) {
         code = String(code);
         const W = VOUCHER.W, H = VOUCHER.H;
         const c = document.createElement('canvas');
@@ -673,6 +674,7 @@ window.Flow = (function () {
         ]);
         if (document.fonts) {
             try { await document.fonts.load('40px "PressStart2P"'); } catch (e) {}
+            try { await document.fonts.load('600 92px ' + VOUCHER.FONT_CODE, code); } catch (e) {}
         }
         x.fillStyle = '#0a0d33'; x.fillRect(0, 0, W, H);
         if (bg) {
@@ -724,21 +726,27 @@ window.Flow = (function () {
         x.fillStyle = 'rgba(7,10,38,.9)'; x.fill();
         x.setLineDash([18, 12]); x.lineWidth = 4; x.strokeStyle = '#F7B600'; x.stroke(); x.setLineDash([]);
         x.fillStyle = '#FFC22E';
-        voucherFit(x, code, 92, 'Consolas, "Courier New", monospace', 690);
+        voucherFit(x, code, 92, VOUCHER.FONT_CODE, 690, 600);
         x.fillText(code, 540, 625);
         x.fillStyle = '#d5dcff'; x.font = '400 34px Inter, system-ui, sans-serif';
         x.textBaseline = 'alphabetic';
         wrapText(x, PRIZE_COPY.voucherHint, 540, 786, 760, 46);
-        // Bez stopki o regulaminie i bez dodatkowych deklaracji o kodzie.
+        if (validToText) {
+            const validity = T('prize.validOn', { date: validToText });
+            x.fillStyle = '#98a0d0';
+            voucherFit(x, validity, 26, 'Inter, system-ui, sans-serif', 760);
+            x.fillText(validity, 540, 832);
+        }
         return c;
     }
-    function prepareVoucher(code, rewardName) {
+    function prepareVoucher(code, rewardName, validToText) {
         voucherFile = null;
         const renderId = ++voucherRenderId;
-        drawVoucher(code, rewardName).then(c => {
+        const fileName = `${T('home.title')}-${rewardName || ''}-${validToText || ''}.png`.replace(/\s+/g, '-');
+        drawVoucher(code, rewardName, validToText).then(c => {
             c.toBlob(blob => {
                 if (!blob || renderId !== voucherRenderId) return;
-                voucherFile = new File([blob], 'nagroda-' + code + '.png', { type: 'image/png' });
+                voucherFile = new File([blob], fileName, { type: 'image/png' });
             }, 'image/png');
         }).catch(e => console.error('[Flow] voucher', e));
     }

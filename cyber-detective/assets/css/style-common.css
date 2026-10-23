@@ -1070,6 +1070,14 @@ body {
     }
 }
 @font-face {
+    font-family: "Fira Code";
+    src: url("../fonts/FiraCode-SemiBold.woff2") format("woff2"),
+         url("../fonts/FiraCode-SemiBold.woff") format("woff");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
     font-family: "PressStart2P";
     src: url("../fonts/PressStart2P.woff2") format("woff2");
     font-weight: 400;
@@ -2127,7 +2135,7 @@ body[data-screen] {
 #screen-prize .prize-ticket-heading{font:600 14px/1.4 Inter,system-ui,sans-serif;color:#98a0d0;margin:0 0 16px;}
 #screen-prize .prize-code-label{display:none;}
 body[data-screen='prize'] #screen-prize.screen .prize-code-box{container-type:inline-size;background:#070a26;border:2px dashed #f7b600;border-radius:12px;padding:18px 8px;margin:0 0 8px;}
-body[data-screen='prize'] #screen-prize.screen #prize-code{font:400 min(44px,var(--voucher-code-size,7cqw))/1.15 Consolas,'Courier New',monospace;color:#ffc22e;white-space:nowrap;letter-spacing:0;word-break:normal;text-shadow:none;}
+body[data-screen='prize'] #screen-prize.screen #prize-code{font:600 min(44px,var(--voucher-code-size,7cqw))/1.15 'Fira Code',Consolas,'Courier New',monospace;color:#ffc22e;white-space:nowrap;letter-spacing:0;word-break:normal;text-shadow:none;}
 body[data-screen='prize'] #screen-prize #btn-copy{display:inline-flex;min-height:44px;margin:0 auto 12px;padding:10px 14px;align-items:center;justify-content:center;}
 body[data-screen='prize'] #screen-prize #btn-copy.hidden{display:none!important;}
 #screen-prize #prize-hint{font:400 13px/1.5 Inter,system-ui,sans-serif;color:#d5dcff;margin:0;}

@@ -37,7 +37,7 @@ window.TEXTS = {
             'Steruj detektywem za pomocą ekranu dotykowego, strzałek na klawiaturze lub pada.',
             'Zbieraj lupy i jedzenie — każde daje punkty.',
             'Unikaj przeciwników — dotknięcie kosztuje jedno życie.',
-            'Zbierz kartę <b>Visa</b> — przez chwilę masz <b>x2 punkty</b> i <b>ścigasz przeciwników</b> (złapany przeciwnik = bonus).',
+            'Zbieraj karty <b>Visa</b> — <b>x2 punkty</b>, <b>ścigaj przeciwników</b> (złapany przeciwnik = bonus).',
             'Wyczyść labirynt z lup, aby przejść na kolejny poziom.'
         ],
         prizesTitle: 'NAGRODY',
@@ -45,7 +45,7 @@ window.TEXTS = {
                     'W GameON możesz aktywować tylko 1 kod dziennie, ' +
                     'dlatego najlepiej wykorzystaj kod o najwyższej wartości. ' +
                     'Zgromadzoną pulę możesz wymienić na nagrodę lub zbierać dalej.',
-        chaseLabel:  'ścigasz drony'
+        chaseLabel:  'ścigasz przeciwników'
     },
 
     ranking: {
@@ -68,7 +68,7 @@ window.TEXTS = {
         visaBar:    'VISA x{mult}',
         slowPop:    'SPOWOLNIENIE',
         caught:     'ZŁAPANY!',
-        mazeClear:  'POZIOM {level} ✔',
+        mazeClear:  'POZIOM {level} ukonczony!',
         levelClear: 'POZIOM {level}',
         chase:      'ŚCIGAJ',
         slow:       'SLOW'

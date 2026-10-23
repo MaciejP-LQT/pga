@@ -15,6 +15,7 @@ function setup(game, search = '') {
     const storage = new Map();
     const requests = [];
     const errors = [];
+    const painted = [];
     let responsePrize;
     function element(id) {
         if (!elements.has(id)) {
@@ -37,6 +38,7 @@ function setup(game, search = '') {
         'fillRect', 'beginPath', 'moveTo', 'lineTo', 'arcTo', 'arc',
         'closePath', 'fill', 'stroke', 'setLineDash', 'fillText', 'roundRect'
     ].map(name => [name, () => {}]));
+    drawing.fillText = (text, x, y, maxWidth) => painted.push({ text, x, y, maxWidth, font: drawing.font, color: drawing.fillStyle });
     drawing.createLinearGradient = () => ({ addColorStop() {} });
     drawing.measureText = text => ({ width: text.length * 10 });
     const window = { addEventListener() {} };
@@ -89,7 +91,7 @@ function setup(game, search = '') {
     context.CONFIG.API_ENABLED = true;
     context.CONFIG.PRIZE_ALLOW_DOWNLOAD = true;
     return {
-        element, storage, requests, api: window.Api,
+        element, storage, requests, painted, texts: window.TEXTS, api: window.Api,
         async claim(validToText) {
             responsePrize = { code: 'TEST-CODE', typeName: 'START', validToText };
             assert.equal((await window.Api.startSession()).ok, true);
@@ -99,6 +101,7 @@ function setup(game, search = '') {
             return result.prize;
         },
         async enter(prize) {
+            painted.length = 0;
             hooks.get('prize').enter(prize ? { prize } : {});
             await new Promise(setImmediate);
             assert.deepEqual(errors, []);
@@ -108,7 +111,7 @@ function setup(game, search = '') {
 
 for (const game of games) {
     for (const search of ['', '?hideDownload=1']) {
-        test(`${game.name}: API date is displayed, persisted and cached with ${JSON.stringify(search)}`, async () => {
+        test(`${game.name}: API date is displayed on screen and in the image, persisted and cached with ${JSON.stringify(search)}`, async () => {
             const env = setup(game, search);
             const prize = await env.claim('22.10.2026');
             assert.equal(prize.validToText, '22.10.2026');
@@ -118,12 +121,17 @@ for (const game of games) {
             assert.equal(env.element('prize-validity').textContent, 'Ważny w dniu: 22.10.2026');
             assert.equal(env.element('prize-validity').classList.contains('hidden'), false);
             assert.equal(env.element('btn-download').classList.contains('hidden'), search !== '');
+            assert.deepEqual(env.painted.find(item => item.text === env.element('prize-validity').textContent), {
+                text: env.element('prize-validity').textContent,
+                x: 540, y: 832, maxWidth: 760, font: '400 26px Inter, system-ui, sans-serif', color: '#98a0d0'
+            });
             const cached = await env.api.claimPrize();
             assert.equal(cached.cached, true);
             assert.equal(cached.prize, prize);
             env.element('prize-validity').textContent = '';
             await env.enter();
             assert.equal(env.element('prize-validity').textContent, 'Ważny w dniu: 22.10.2026');
+            assert.equal(env.painted.filter(item => item.text === env.element('prize-validity').textContent).length, 1);
             assert.deepEqual(env.requests, ['GameStart', 'GameEnd', 'GameCodeIssue']);
         });
     }
@@ -136,6 +144,7 @@ for (const game of games) {
             assert.equal(env.element('prize-code').textContent, 'TEST-CODE');
             assert.equal(env.element('prize-validity').textContent, '');
             assert.equal(env.element('prize-validity').classList.contains('hidden'), true);
+            assert.equal(env.painted.some(item => item.text.startsWith('Ważny w dniu:')), false);
         });
     }
 
@@ -145,6 +154,20 @@ for (const game of games) {
         await env.enter(await env.claim('  23.10.2026  '));
         assert.equal(env.element('prize-validity').textContent, 'Ważny w dniu: 23.10.2026');
         assert.equal(env.element('prize-validity').classList.contains('hidden'), false);
+        assert.deepEqual(env.painted.filter(item => item.text.startsWith('Ważny w dniu:')).map(item => item.text),
+            ['Ważny w dniu: 23.10.2026']);
+    });
+
+    test(`${game.name}: the image uses the same validity label and unparsed API date as the screen`, async () => {
+        const env = setup(game);
+        env.texts.prize.validOn = 'Termin: {date}';
+        await env.enter(await env.claim('24 października 2026'));
+        assert.equal(env.element('prize-validity').textContent, 'Termin: 24 października 2026');
+        const validity = env.painted.find(item => item.text === env.element('prize-validity').textContent);
+        assert.ok(validity);
+        assert.equal(validity.maxWidth, 760);
+        const instruction = env.painted[env.painted.indexOf(validity) - 1];
+        assert.ok(validity.y - instruction.y >= 46);
     });
 
     test(`${game.name}: the date follows the hint inside the ticket body`, () => {

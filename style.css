@@ -61,7 +61,7 @@ button:focus-visible, a:focus-visible {
     margin-inline: auto;
     min-height: 100vh;
     min-height: 100svh;
-    padding: max(76px, calc(env(safe-area-inset-top) + 72px)) 24px max(24px, env(safe-area-inset-bottom));
+    padding: max(48px, calc(env(safe-area-inset-top) + 48px)) 24px max(24px, env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -182,6 +182,8 @@ button.game-art { cursor: default; }
 .controls-hint { margin: 25px 0 0; text-align: center; color: var(--muted); font-size: 11px; }
 .controls-hint span { margin-inline: 6px; color: var(--gold); }
 .noscript { text-align: center; }
+.hub-footer { margin-top: 32px; text-align: center; color: var(--muted); font-size: 12px; }
+.hub-footer a { color: var(--gold); font-weight: 600; }
 
 .view-switch {
     position: fixed;

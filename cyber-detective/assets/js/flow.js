@@ -136,7 +136,7 @@ window.Flow = (function () {
             const list = $('howto-rules');
             if (list) {
                 const rules = T('howto.rules');
-                console.log('howto.rules', rules);
+                // console.log('howto.rules', rules);
                 list.innerHTML = Array.isArray(rules)
 
                     ? rules.map(function (r) { return '<li>' + r + '</li>'; }).join('')
@@ -527,7 +527,7 @@ window.Flow = (function () {
             $('btn-download').classList.toggle('hidden', !allowDownload);
             $('copy-label').textContent = T('prize.copy');
 
-            prepareVoucher(prize.code, prize.typeName);
+            prepareVoucher(prize.code, prize.typeName, validToText);
             startPrizeIdle();
         }
     });
@@ -585,7 +585,8 @@ window.Flow = (function () {
         BG: 'assets/images/home-bg.jpg',             /* tlo gry */
         LOGO_VISA: 'assets/images/logo-visa.png',
         LOGO_PARTNER: 'assets/images/logo-kfc.png',  /* null = samo Visa */
-        FONT_PIXEL: '"PressStart2P", monospace'
+        FONT_PIXEL: '"PressStart2P", monospace',
+        FONT_CODE: '"Fira Code", Consolas, "Courier New", monospace'
     };
     let voucherFile = null;
     let voucherToken = 0;
@@ -628,7 +629,7 @@ window.Flow = (function () {
         x.lineTo(l, t + r); x.arcTo(l, t, l + r, t, r);
         x.closePath();
     }
-    async function drawVoucher(code, rewardName) {
+    async function drawVoucher(code, rewardName, validToText) {
         const W = VOUCHER.W, H = VOUCHER.H;
         const c = document.createElement('canvas');
         c.width = W; c.height = H;
@@ -638,6 +639,7 @@ window.Flow = (function () {
         ]);
         const bg = imgs[0], visa = imgs[1], partner = imgs[2];
         try { await document.fonts.load('40px ' + VOUCHER.FONT_PIXEL); } catch (e) {}
+        try { await document.fonts.load('600 92px ' + VOUCHER.FONT_CODE, code); } catch (e) {}
 
         /* 1. tlo: cala scena gry na dole (szerokosc 100%), niebo dociagniete do gory */
         x.fillStyle = '#0a0d33'; x.fillRect(0, 0, W, H);
@@ -714,7 +716,7 @@ window.Flow = (function () {
         x.beginPath(); x.roundRect(W / 2 - boxW / 2, boxY, boxW, boxH, 22); x.fill();
         x.setLineDash([18, 12]); x.lineWidth = 4; x.strokeStyle = '#F7B600'; x.stroke(); x.setLineDash([]);
         x.fillStyle = '#FFC22E';
-        x.font = '800 92px Consolas, "Courier New", monospace';
+        x.font = '600 92px ' + VOUCHER.FONT_CODE;
         while (x.measureText(code).width > boxW - 70) {
             x.font = x.font.replace(/(\d+)px/, function (m, n) { return (n - 2) + 'px'; });
         }
@@ -725,6 +727,11 @@ window.Flow = (function () {
         x.font = '400 34px Inter, system-ui, sans-serif';
         x.textBaseline = 'alphabetic';
         wrapText(x, T('prize.voucherHint'), W / 2, boxY + boxH + 80, boxW, 46);
+        if (validToText) {
+            x.fillStyle = '#98a0d0';
+            x.font = '400 26px Inter, system-ui, sans-serif';
+            x.fillText(T('prize.validOn', { date: validToText }), W / 2, TOP + BH - 28, boxW);
+        }
 
         /* 7. stopka pod biletem - tylko gdy jest prize.footer w texts.js */
         const footer = T('prize.footer');
@@ -735,13 +742,14 @@ window.Flow = (function () {
         }
         return c;
     }
-    function prepareVoucher(code, rewardName) {
+    function prepareVoucher(code, rewardName, validToText) {
         voucherFile = null;
         const token = ++voucherToken;               /* starszy render nie nadpisze nowszego */
-        drawVoucher(code, rewardName).then(function (c) {
+        const fileName = `${T('home.title')}-${rewardName || ''}-${validToText || ''}.png`.replace(/\s+/g, '-');
+        drawVoucher(code, rewardName, validToText).then(function (c) {
             c.toBlob(function (blob) {
                 if (!blob || token !== voucherToken) return;
-                voucherFile = new File([blob], 'nagroda-' + code + '.png', { type: 'image/png' });
+                voucherFile = new File([blob], fileName, { type: 'image/png' });
             }, 'image/png');
         }).catch(function (e) { console.error('[Flow] voucher', e); });
     }
