@@ -39,7 +39,7 @@ window.TEXTS = {
   home: {
     title:
       '<span class="title-blue">COMBO</span> <span class="title-gold">MATCH</span>',
-    subtitle: "Odkrywaj pary, zapamiętuj układy, zdobywaj nagrody!",
+    subtitle: "Odkrywaj pary, zapamiętuj układy, bądź najlepszy!",
   },
 
   /* ---------- 3. HOW TO PLAY ---------- */
@@ -50,14 +50,10 @@ window.TEXTS = {
       "Odkrywaj karty po dwie — szukaj identycznych par.",
       "Za każdą dopasowaną parę dostajesz <b>10 punktów × bonus</b>.",
       "Trafienia z rzędu dają <b>bonus ×3</b> — pudło resetuje go.",
-      "Każdy etap ma limit czasu — graj szybko i precyzyjnie!",
       "Im dalej zajdziesz, tym więcej kart na planszy i mniej czasu na odkrycie.",
     ],
-    prizesTitle: 'NAGRODY',
-    prizesText: 'Im wyższy wynik w grze, tym wyższa wartość otrzymanego kodu. ' +
-                'W GameON możesz aktywować tylko 1 kod dziennie, ' +
-                'dlatego najlepiej wykorzystaj kod o najwyższej wartości. ' +
-                'Zgromadzoną pulę możesz wymienić na nagrodę lub zbierać dalej.',
+    prizesTitle: 'POWODZENIA!',
+    prizesText: 'Im wyższy wynik w grze, tym wyższa pozycja w rankingu. ',
   },
 
   /* ---------- 4. RANKING ---------- */
@@ -71,12 +67,13 @@ window.TEXTS = {
 
   /* ---------- 5. GAME ---------- */
   game: {
+    getReady: "PRZYGOTUJ SIĘ!",
     stage: "Etap {n}",
     stageComplete: "🏆 Etap {n} ukończony!",
     nextStage: "Przechodzisz do Etapu {n}",
     nextStageBtn: "NASTĘPNY ETAP",
     finishOnlyBtn: "ZAKOŃCZ",
-    finishBtn: "ZAKOŃCZ I ODBIERZ NAGRODY",
+    finishBtn: "ZAKOŃCZ",
     timeUp: "Czas minął!",
   },
 
@@ -102,8 +99,8 @@ window.TEXTS = {
     win: {
       title: "BRAWO!",
       score: "Twój wynik: {score}",
-      subtitle: "Odbierz nagrodę albo zapisz się w rankingu.",
-      savedInfo: "Twój wynik jest w rankingu. Odbierz nagrodę!",
+      subtitle: "Jeżeli chcesz, możesz zapisać się w rankingu.",
+      savedInfo: "Twój wynik jest w rankingu.",
       prize: "ODBIERZ NAGRODĘ",
       addRank: "ZAPISZ WYNIK",
     },
@@ -140,7 +137,7 @@ window.TEXTS = {
     gameTitle: "COMBO MATCH",
     title: "TWOJA NAGRODA",
     codeLabel: "Twój kod",
-    validOn: "Ważny w dniu: {date}",
+    validOn: "Ważny do dnia: {date}",
     hint: "Skopiuj kod  i wykorzystaj go w GameON. Możesz też pobrać voucher.",
     hintCopyOnly: "Skopiuj kod i wykorzystaj go w GameON.",
     copy: "Kopiuj kod",

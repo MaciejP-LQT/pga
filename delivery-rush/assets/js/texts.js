@@ -34,7 +34,7 @@ window.TEXTS = {
     /* ---------- 2. HOME ---------- */
     home: {
         title:    'Delivery Rush',
-        subtitle: 'Zbieraj punkty i wygrywaj nagrody'
+        subtitle: ' '
     },
     /* ---------- 3. HOW TO PLAY ---------- */
   
@@ -49,11 +49,10 @@ window.TEXTS = {
             'Błękitne pole z zegarem spowalnia grę, a czerwone pole z X odejmuje 3 punkty.',
             'Visa: <b>2x punkty</b>.'
         ],
-        prizesTitle: 'PUNKTACJA I NAGRODY',
-        prizesText: 'Im wyższy wynik w grze, tym wyższa wartość otrzymanego kodu. ' +
-                    'W GameON możesz aktywować tylko 1 kod dziennie, ' +
-                    'dlatego najlepiej wykorzystaj kod o najwyższej wartości. ' +
-                    'Zgromadzoną pulę możesz wymienić na nagrodę lub zbierać dalej.'
+        prizesTitle: 'PUNKTACJA',
+        prizesText: 'Im wyższy wynik w grze, tym wyższa pozycja w rankingu. ' +                    
+                    'Szczegółowa informacja na temat punktowania ' +
+                    'poszczególnych elementów:',
     },
     /* ---------- 4. RANKING ---------- */
     ranking: {
@@ -104,8 +103,8 @@ window.TEXTS = {
         win: {
             title:     'BRAWO!',
             score:     'Twój wynik: {score}',
-            subtitle:  'Odbierz punkty w GameON lub zapisz wynik w rankingu.',
-            savedInfo: 'Twój wynik jest w rankingu. Odbierz nagrodę!',
+            subtitle:  'Możesz zapisać swój wynik w rankingu.',
+            savedInfo: 'Twój wynik jest w rankingu.',
             prize:     'ODBIERZ PUNKTY',
             addRank:   'ZAPISZ WYNIK'
         },
@@ -136,7 +135,7 @@ window.TEXTS = {
     prize: {
         title:      'TWÓJ KOD',
         codeLabel:  'Kod nagrody',
-        validOn:    'Ważny w dniu: {date}',
+        validOn:    'Ważny do dnia: {date}',
         hint:       'Skopiuj kod albo pobierz go, żeby nie zgubić nagrody.',
         noCode:     'Nagrody zostały na dziś wyczerpane.',  
         copy:       'Kopiuj kod',

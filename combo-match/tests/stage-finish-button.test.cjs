@@ -25,6 +25,7 @@ function setup() {
         Flow,
         document: { getElementById: id => id === 'btn-stage-finish' ? button : null },
         clearInterval() {},
+        clearTimeout() {},
         setTimeout() {}
     });
     for (const [file, name] of [['config.js', 'CONFIG'], ['texts.js', 'T']]) {

@@ -18,7 +18,7 @@
 <link rel="preload" href="assets/btn-small.png" as="image">
 <link rel="preload" href="assets/bg-neon.jpg" as="image">
 <link rel="preload" href="assets/pixel-robot.png" as="image">
-<link rel="stylesheet" href="style.css?v=voucher-code-font-1">
+<link rel="stylesheet" href="style.css?v=concealed-cards-1">
 <link rel="stylesheet" href="viewport.css?v=iframe-fit-1">
 <script src="js/viewport.js?v=iframe-fit-1" defer></script>
 </head>
@@ -57,6 +57,11 @@
 
         <div class="game-board" id="game-board">
           <!-- Cards injected by game.js -->
+        </div>
+
+        <div id="countdown-overlay" class="countdown-overlay hidden" role="status" aria-live="polite" aria-atomic="true">
+          <p class="countdown-label" data-t="game.getReady"></p>
+          <span id="countdown-value" class="countdown-value"></span>
         </div>
 
         <!-- Visa corner logo -->
@@ -362,14 +367,14 @@
 
 
 </div>
-<script src="js/texts.js?v=prize-validity-1"></script>
+<script src="js/texts.js?v=concealed-cards-1"></script>
 <script src="js/config.js"></script>
 <script src="js/source.js"></script>
 <script src="js/config-check.js"></script>
 <script src="js/screens.js"></script>
 <script src="js/api.js?v=prize-validity-1"></script>
-<script src="js/game.js?v=countdown-vibration-1"></script>
-<script src="js/flow.js?v=voucher-validity-1"></script>
+<script src="js/game.js?v=concealed-cards-1"></script>
+<script src="js/flow.js?v=concealed-cards-1"></script>
 <script>
     /* Jedyny punkt startowy — flow.js spina wszystko */
     document.addEventListener('DOMContentLoaded', () => Flow.init());

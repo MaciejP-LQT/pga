@@ -809,7 +809,7 @@ window.Flow = (function () {
                 break;
 
             case 'confirm':
-                if (window.Game && Game.pause) Game.pause();
+                if (window.Game && Game.pause && Game.pause() === false) return;
                 confirmExit('home');
                 break;
 

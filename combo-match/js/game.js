@@ -5,9 +5,9 @@
    punktacja. Ekrany, API i nawigacja → flow.js.
 
    API:
-     Game.start()      rozpocznij nową grę (etap 1)
+     Game.start()      rozpocznij nową grę od odliczania 3, 2, 1 (każdy etap)
      Game.stop()       zatrzymaj grę natychmiast
-     Game.pause()      zatrzymaj timer (potwierdzenie wyjścia)
+     Game.pause()      zatrzymaj odliczanie/timer; false, jeśli gra już się skończyła
      Game.resume()     wznów timer
      Game.getScore()   aktualny wynik
      Game.getStage()   aktualny numer etapu
@@ -18,7 +18,8 @@ window.Game = (function () {
     /* =====================================================
        STAN GRY
        ===================================================== */
-    let cards = [];
+    // Układ kart pozostaje w JS, nigdy w atrybutach zakrytych elementów DOM.
+    let cardDataByElement = new WeakMap();
     let flippedCards = [];
     let matchedPairs = 0;
     let totalPairs = 0;
@@ -33,7 +34,12 @@ window.Game = (function () {
     let timerInterval = null;
     let remainingSeconds = 0;
     let timerStarted = false;
+    let timerDeadline = 0;
+    let countdownInterval = null;
+    let countdownDeadline = 0;
     let paused = false;
+    let pausedAt = 0;
+    const stageTimeouts = new Set();
 
     /* =====================================================
        DOM
@@ -198,33 +204,78 @@ window.Game = (function () {
        TIMER (countdown)
        ===================================================== */
 
-    function startTimer() {
+    function updateTimer() {
+        if (!timerStarted || paused || gameOver) return;
+        const seconds = Math.max(0, Math.ceil((timerDeadline - performance.now()) / 1000));
+        const changed = seconds !== remainingSeconds;
+        remainingSeconds = seconds;
+        const els = getEls();
+        if (els.time) els.time.textContent = formatTime(seconds);
+
+        const timeItem = els.time ? els.time.closest('.hud-item') : null;
+        if (timeItem) timeItem.classList.toggle('time-danger', seconds <= 10);
+        if (changed && seconds > 0 && seconds <= 5) vibrate(80);
+        if (seconds === 0) finishGame();
+    }
+
+    function startTimer(startedAt = performance.now()) {
         if (timerStarted) return;
         timerStarted = true;
-        timerInterval = setInterval(() => {
-            if (paused) return;
-            remainingSeconds--;
-            const els = getEls();
-            if (els.time) els.time.textContent = formatTime(remainingSeconds);
-
-            const timeItem = els.time ? els.time.closest('.hud-item') : null;
-            if (timeItem) {
-                timeItem.classList.toggle('time-danger', remainingSeconds <= 10);
-            }
-
-            if (remainingSeconds > 0 && remainingSeconds <= 5) {
-                vibrate(80);
-            }
-
-            if (remainingSeconds <= 0) {
-                finishGame();
-            }
-        }, 1000);
+        timerDeadline = startedAt + remainingSeconds * 1000;
+        timerInterval = setInterval(updateTimer, 100);
+        updateTimer();
     }
 
     function stopTimer() {
         clearInterval(timerInterval);
         timerInterval = null;
+        timerStarted = false;
+    }
+
+    function stopCountdown() {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        countdownDeadline = 0;
+        const overlay = $('countdown-overlay');
+        if (overlay) overlay.classList.add('hidden');
+    }
+
+    function updateCountdown() {
+        if (countdownInterval === null || paused || gameOver) return;
+        const seconds = Math.ceil((countdownDeadline - performance.now()) / 1000);
+        if (seconds <= 0) {
+            // Opóźniony callback nie przesuwa początku czasu rozgrywki.
+            const startedAt = countdownDeadline;
+            stopCountdown();
+            isLocked = false;
+            startTimer(startedAt);
+            return;
+        }
+        const value = $('countdown-value');
+        if (value && value.textContent !== String(seconds)) value.textContent = seconds;
+    }
+
+    function startCountdown() {
+        stopCountdown();
+        isLocked = true;
+        countdownDeadline = performance.now() + 3000;
+        const overlay = $('countdown-overlay');
+        if (overlay) overlay.classList.remove('hidden');
+        countdownInterval = setInterval(updateCountdown, 100);
+        updateCountdown();
+    }
+
+    function scheduleStage(callback, delay) {
+        const id = setTimeout(() => {
+            stageTimeouts.delete(id);
+            callback();
+        }, delay);
+        stageTimeouts.add(id);
+    }
+
+    function clearStageTimeouts() {
+        stageTimeouts.forEach(id => clearTimeout(id));
+        stageTimeouts.clear();
     }
 
     function resetTimer(seconds) {
@@ -241,18 +292,15 @@ window.Game = (function () {
        KARTY
        ===================================================== */
 
-    function createCardElement(cardData, index) {
+    function createCardElement(cardData) {
         const card = document.createElement('div');
         card.className = 'card';
-        card.dataset.id = cardData.id;
-        card.dataset.index = index;
+        cardDataByElement.set(card, { id: cardData.id, src: cardData.src });
 
         card.innerHTML =
             '<div class="card-inner">' +
                 '<div class="card-face card-back"></div>' +
-                '<div class="card-face card-front">' +
-                    '<img src="' + cardData.src + '" alt="' + cardData.id + '" loading="lazy" draggable="false">' +
-                '</div>' +
+                '<div class="card-face card-front"></div>' +
             '</div>';
 
         card.addEventListener('click', () => onCardClick(card));
@@ -271,12 +319,18 @@ window.Game = (function () {
 
     function onCardClick(card) {
         if (gameOver || paused) return;
-        if (isLocked) return;
+        if (isLocked || !timerStarted || !cardDataByElement.has(card)) return;
         if (card.classList.contains('flipped')) return;
         if (card.classList.contains('matched')) return;
 
-        startTimer();
+        updateTimer();
+        if (gameOver) return;
 
+        const image = document.createElement('img');
+        image.src = cardDataByElement.get(card).src;
+        image.alt = '';
+        image.draggable = false;
+        card.querySelector('.card-front').replaceChildren(image);
         card.classList.add('flipped');
         flippedCards.push(card);
 
@@ -287,7 +341,7 @@ window.Game = (function () {
 
     function checkForMatch() {
         const [card1, card2] = flippedCards;
-        const isMatch = card1.dataset.id === card2.dataset.id;
+        const isMatch = cardDataByElement.get(card1).id === cardDataByElement.get(card2).id;
 
         if (isMatch) handleMatch(card1, card2);
         else handleMismatch(card1, card2);
@@ -318,7 +372,9 @@ window.Game = (function () {
         flippedCards = [];
 
         if (matchedPairs === totalPairs) {
-            setTimeout(showStageComplete, 600);
+            isLocked = true;
+            stopTimer();
+            scheduleStage(showStageComplete, 600);
         }
     }
 
@@ -328,14 +384,16 @@ window.Game = (function () {
         multiplier = Math.max(1, multiplier - 1);
         updateBonusUI();
 
-        setTimeout(() => {
+        scheduleStage(() => {
             card1.classList.add('no-match');
             card2.classList.add('no-match');
         }, 400);
 
-        setTimeout(() => {
-            card1.classList.remove('flipped', 'no-match');
-            card2.classList.remove('flipped', 'no-match');
+        scheduleStage(() => {
+            [card1, card2].forEach(card => {
+                card.classList.remove('flipped', 'no-match');
+                card.querySelector('.card-front').replaceChildren();
+            });
             flippedCards = [];
             isLocked = false;
         }, 1000);
@@ -348,6 +406,8 @@ window.Game = (function () {
     function finishGame() {
         if (gameOver) return;
         stopTimer();
+        stopCountdown();
+        clearStageTimeouts();
         gameOver = true;
         isLocked = true;
         hideStageOverlay();
@@ -387,7 +447,7 @@ window.Game = (function () {
 
         // Celebration particles
         for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
+            scheduleStage(() => {
                 const x = Math.random() * window.innerWidth;
                 const y = Math.random() * window.innerHeight;
                 const colors = ['#F7B600', '#FFE28A', '#3F47B8', '#98a0d0', '#eef1ff'];
@@ -412,6 +472,9 @@ window.Game = (function () {
        ===================================================== */
 
     function initStage() {
+        stopCountdown();
+        clearStageTimeouts();
+        cardDataByElement = new WeakMap();
         const config = getStageConfig(currentStage);
         totalPairs = config.pairs;
         const totalSlots = config.cols * config.rows;
@@ -431,9 +494,10 @@ window.Game = (function () {
         flippedCards = [];
         matchedPairs = 0;
         multiplier = 1;
-        isLocked = false;
+        isLocked = true;
         gameOver = false;
         paused = false;
+        pausedAt = 0;
 
         // Reset UI (keep score)
         if (els.score) els.score.textContent = score;
@@ -455,7 +519,7 @@ window.Game = (function () {
             ]);
         }
         const cardPairs = [...selectedImages, ...selectedImages];
-        cards = shuffle(cardPairs);
+        const cards = shuffle(cardPairs);
 
         // Clear and populate board
         boardEl.innerHTML = '';
@@ -468,13 +532,13 @@ window.Game = (function () {
                 if (i === centerIndex) {
                     slots.push({ type: 'placeholder' });
                 } else {
-                    slots.push({ type: 'card', data: cards[cardIdx], cardIndex: cardIdx });
+                    slots.push({ type: 'card', data: cards[cardIdx] });
                     cardIdx++;
                 }
             }
         } else {
-            cards.forEach((cardData, idx) => {
-                slots.push({ type: 'card', data: cardData, cardIndex: idx });
+            cards.forEach(cardData => {
+                slots.push({ type: 'card', data: cardData });
             });
         }
 
@@ -483,13 +547,13 @@ window.Game = (function () {
             if (slot.type === 'placeholder') {
                 el = createPlaceholder();
             } else {
-                el = createCardElement(slot.data, slot.cardIndex);
+                el = createCardElement(slot.data);
             }
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
             boardEl.appendChild(el);
 
-            setTimeout(() => {
+            scheduleStage(() => {
                 el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
                 el.style.opacity = '1';
                 el.style.transform = 'translateY(0)';
@@ -497,6 +561,7 @@ window.Game = (function () {
         });
 
         watchBoardLayout();
+        startCountdown();
     }
 
     /* =====================================================
@@ -512,16 +577,31 @@ window.Game = (function () {
 
     function stop() {
         stopTimer();
+        stopCountdown();
+        clearStageTimeouts();
         gameOver = true;
         isLocked = true;
     }
 
     function pause() {
+        if (gameOver) return false;
+        if (paused) return true;
+        updateCountdown();
+        updateTimer();
+        if (gameOver) return false;
+        pausedAt = performance.now();
         paused = true;
+        return true;
     }
 
     function resume() {
+        if (!paused || gameOver) return;
+        const pauseDuration = performance.now() - pausedAt;
+        if (timerStarted) timerDeadline += pauseDuration;
+        if (countdownInterval !== null) countdownDeadline += pauseDuration;
         paused = false;
+        updateCountdown();
+        updateTimer();
     }
 
     /* =====================================================

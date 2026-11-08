@@ -28,7 +28,7 @@ window.TEXTS = {
 
     home: {
         title:    'Cyber\nDetective',
-        subtitle: 'Zbieraj tokeny, unikaj dronów. Złote pole odwraca role.'
+        subtitle: 'Zbieraj lupy, unikaj przeciwników. Karta odwraca role.'
     },
 
     howto: {
@@ -40,11 +40,10 @@ window.TEXTS = {
             'Zbieraj karty <b>Visa</b> — <b>x2 punkty</b>, <b>ścigaj przeciwników</b> (złapany przeciwnik = bonus).',
             'Wyczyść labirynt z lup, aby przejść na kolejny poziom.'
         ],
-        prizesTitle: 'NAGRODY',
-        prizesText: 'Im wyższy wynik w grze, tym wyższa wartość otrzymanego kodu. ' +
-                    'W GameON możesz aktywować tylko 1 kod dziennie, ' +
-                    'dlatego najlepiej wykorzystaj kod o najwyższej wartości. ' +
-                    'Zgromadzoną pulę możesz wymienić na nagrodę lub zbierać dalej.',
+        prizesTitle: 'PUNKTACJA',
+        prizesText: 'Im wyższy wynik w grze, tym wyższa pozycja w rankingu. ' +                    
+                    'Szczegółowa informacja na temat punktowania ' +
+                    'poszczególnych elementów:',
         chaseLabel:  'ścigasz przeciwników'
     },
 
@@ -85,8 +84,8 @@ window.TEXTS = {
         win: {
             title:     'BRAWO!',
             score:     'Twój wynik: {score}',
-            subtitle:  'Odbierz punkty w GameON lub zapisz wynik w rankingu.',
-            savedInfo: 'Twój wynik jest w rankingu. Odbierz nagrodę!',
+            subtitle:  'Możesz zapisać wynik w rankingu.',
+            savedInfo: 'Twój wynik jest w rankingu.',
             prize:     'ODBIERZ PUNKTY',
             addRank:   'ZAPISZ WYNIK'
         }
@@ -115,7 +114,7 @@ window.TEXTS = {
     prize: {
         title:     'TWÓJ KOD',
         codeLabel: 'Twój kod',
-        validOn:   'Ważny w dniu: {date}',
+        validOn:   'Ważny do dnia: {date}',
         hint:      'Zapisz kod i wykorzystaj go w aplikacji.',
         screenHint: 'Skopiuj kod i wykorzystaj go w GameON. Możesz też pobrać voucher.',
         screenHintCopyOnly: 'Skopiuj kod i wykorzystaj go w GameON.',

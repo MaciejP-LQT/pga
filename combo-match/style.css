@@ -376,6 +376,35 @@ button {
     padding: 16px;
 }
 
+.countdown-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(10, 13, 51, .9);
+    text-align: center;
+    cursor: default;
+}
+
+.countdown-label {
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(14px, 3vw, 24px);
+}
+
+.countdown-value {
+    color: var(--gold);
+    font-family: var(--font-title);
+    font-size: clamp(48px, 12vmin, 120px);
+    line-height: 1.3;
+    text-shadow: 0 0 24px rgba(247, 182, 0, .4);
+}
+
 /* =========================================================
    HUD BOTTOM — Etap value gold
    ========================================================= */

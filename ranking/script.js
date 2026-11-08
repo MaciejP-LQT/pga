@@ -1,6 +1,6 @@
 /* =========================================================
    RANKING DISPLAY — Visa Games
-   Rotacja rankingów: 8s na grę w pętli
+   Rotacja rankingów: domyślnie 5 s na grę w pętli
    ========================================================= */
 (function () {
   "use strict";
@@ -9,11 +9,11 @@
   const TOP_N = 10;
   const TRANSITION_MS = 1200; // czas trwania animacji w ms
 
-  /* -- Parametry URL: ?slide=10&refresh=15 (wartości w sekundach) -- */
+  /* -- Parametry URL: ?slide=5&refresh=15 (wartości w sekundach) -- */
   const _urlParams = new URLSearchParams(window.location.search);
 
   const _slideParam = parseFloat(_urlParams.get("slide"));
-  const SLIDE_DURATION = Math.max(_slideParam > 0 ? _slideParam : 10, 3) * 1000; // min 3 s, domyślnie 10 s
+  const SLIDE_DURATION = Math.max(_slideParam > 0 ? _slideParam : 6, 3) * 1000; // min 3 s, domyślnie 5 s
 
   const _refreshParam = parseFloat(_urlParams.get("refresh"));
   const DATA_REFRESH_MS = Math.max(_refreshParam > 0 ? _refreshParam : 15, 5) * 1000; // min 5 s, domyślnie 15 s
