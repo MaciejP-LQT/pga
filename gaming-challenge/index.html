@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=yes, viewport-fit=cover">
+    <!-- <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=yes, viewport-fit=cover"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=yes, viewport-fit=cover">
     <title>Gaming Challange</title>
     <style>
 
@@ -85,6 +86,28 @@
         padding: 10px; color: #fff; background: #b00020;
         font: 14px sans-serif; text-align: center;
       }
+
+
+      html, body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+      }
+
+      body {
+          position: relative;
+      }
+
+      #unity-canvas {
+          display: block;
+          width: 100%;
+          height: calc(100% - 1px);
+      }
+
+
+
     </style>
   </head>
   <body>
@@ -102,6 +125,7 @@
     </div>
     <div id="error"></div>
 
+    
     <script>
       var canvas = document.querySelector("#unity-canvas");
       var loading = document.querySelector("#loading");
@@ -113,7 +137,7 @@
         errorBox.style.display = "block";
       }
 
-      // Rozdzielczość canvasa = rozmiar okna (iframe) x gęstość pikseli
+      // Dopasowanie rozmiaru gry do aktualnego viewportu iframe
       function resize() {
         var dpr = window.devicePixelRatio || 1;
         canvas.width = Math.round(window.innerWidth * dpr);
@@ -130,40 +154,56 @@
         companyName: "LiquidThread",
         productName: "Gaming Challange",
         productVersion: "1.0",
-        matchWebGLToCanvasSize: false,      // rozmiar ustawiamy sami w resize()
+        matchWebGLToCanvasSize: false,
         showBanner: function (msg, type) {
           if (type === "error") showError(msg);
           else console.warn(msg);
         }
       };
 
+      // Pierwsze dopasowanie
       resize();
+
+      // Reagujemy na zmianę wymiarów iframe
       window.addEventListener("resize", resize);
-      window.addEventListener("orientationchange", function () { setTimeout(resize, 200); });
+
+      window.addEventListener("orientationchange", function () {
+        setTimeout(resize, 200);
+      });
 
       var script = document.createElement("script");
       script.src = buildUrl + "/36f572a62177d9ae940c917fa905ffc3.loader.js";
+
       script.onload = function () {
         createUnityInstance(canvas, config, function (progress) {
           var percent = Math.max(0, Math.min(100, Math.round(progress * 100)));
+
           fill.style.width = percent + "%";
           document.querySelector("#loading-percent").textContent = percent + "%";
           document.querySelector(".loading-track").setAttribute("aria-valuenow", percent);
-          if (percent === 100) document.querySelector("#loading-label").textContent = "URUCHAMIANIE GRY";
+
+          if (percent === 100) {
+            document.querySelector("#loading-label").textContent = "URUCHAMIANIE GRY";
+          }
         }).then(function (unityInstance) {
           loading.style.display = "none";
-          canvas.focus();   // klawiatura/pad działają bez klikania w grę
+          canvas.focus();
         }).catch(function (message) {
           showError(message);
         });
       };
+
       script.onerror = function () {
         showError("Nie udało się wczytać " + script.src + " - sprawdź ścieżkę (iframe src musi kończyć się na / albo index.html).");
       };
+
       document.body.appendChild(script);
 
-      // kliknięcie/dotyk w grę oddaje jej fokus (ważne w iframe dla klawiatury)
-      canvas.addEventListener("pointerdown", function () { canvas.focus(); });
+      // Kliknięcie/dotyk w grę oddaje jej fokus
+      canvas.addEventListener("pointerdown", function () {
+        canvas.focus();
+      });
     </script>
+
   </body>
 </html>

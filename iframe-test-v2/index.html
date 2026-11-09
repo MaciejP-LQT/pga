@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <title>Game Hub — test iframe v2</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="./" aria-label="Test iframe — strona główna">
+            <strong>GAME<span>HUB</span></strong>
+            <span class="brand-caption">IFRAME<br>TEST V2</span>
+        </a>
+        <div class="header-controls">
+            <label class="visually-hidden" for="game-select">Źródło iframe</label>
+            <select id="game-select">
+                <option value="../index.html">Game Hub — wszystkie gry</option>
+                <option value="../gaming-challenge/index.html">Gaming Challenge</option>
+                <option value="../cyber-detective/index.html">Cyber Detective</option>
+                <option value="../combo-match/index.html">Combo Match</option>
+                <option value="../delivery-rush/index.html">Delivery Rush</option>
+                <option value="custom">Własny adres…</option>
+            </select>
+            <button id="reload-game" type="button" title="Wczytaj ponownie wybrane źródło" aria-label="Wczytaj ponownie wybrane źródło">↻</button>
+            <button id="open-settings" class="primary" type="button">Ustawienia</button>
+        </div>
+    </header>
+
+    <aside class="sidebar" aria-label="Menu testowe">
+        <p class="section-label">MENU</p>
+        <nav aria-label="Wybór gry">
+            <button type="button" data-source="../index.html" aria-current="page">Game Hub</button>
+            <p class="section-label">GRY</p>
+            <button type="button" data-source="../gaming-challenge/index.html">Gaming Challenge</button>
+            <button type="button" data-source="../cyber-detective/index.html">Cyber Detective</button>
+            <button type="button" data-source="../combo-match/index.html">Combo Match</button>
+            <button type="button" data-source="../delivery-rush/index.html">Delivery Rush</button>
+        </nav>
+        <p class="sidebar-note">Lokalne środowisko testowe.<br>Bez logowania i integracji KFC.</p>
+    </aside>
+
+    <main class="content">
+        <iframe id="game-frame" class="game-hub" src="../index.html" title="Game Hub" width="100%"></iframe>
+    </main>
+
+    <dialog id="settings" aria-labelledby="settings-title">
+        <div class="settings-heading">
+            <h1 id="settings-title">Ustawienia testu</h1>
+            <form method="dialog"><button type="submit" aria-label="Zamknij ustawienia">✕</button></form>
+        </div>
+        <form id="source-form">
+            <label for="game-url">Adres huba lub gry</label>
+            <input id="game-url" type="text" required spellcheck="false" autocapitalize="off" aria-describedby="url-help frame-status" placeholder="../gaming-challenge/index.html">
+            <p id="url-help" class="help">Ścieżka względem tego testera lub pełny adres HTTP(S). Używaj tylko zaufanych stron — iframe nie ma sandboxa, tak jak na stronie referencyjnej.</p>
+            <button class="primary" type="submit">Wczytaj w iframe</button>
+        </form>
+        <p id="frame-status" role="status"></p>
+        <output id="frame-metrics" aria-label="Wymiary środowiska"></output>
+        <p id="origin-info" class="help"></p>
+        <a id="open-game" href="../index.html" target="_blank" rel="noopener noreferrer">Otwórz wybrane źródło osobno ↗</a>
+        <details class="test-notes">
+            <summary>Co odwzorowuje ten test?</summary>
+            <ul>
+                <li>Układ zmierzony na game-on.kfc.pl/pl/gamehub: od 992 px boczne menu ma 215 px, a iframe zaczyna się na wysokości 69 px i ma wysokość <code>calc(100vh - 65px)</code>. Różnica 4 px i przewijanie rodzica są celowe.</li>
+                <li>Poniżej 992 px menu znika, iframe zaczyna się na wysokości 104 px i ma wysokość <code>calc(100vh - 104px)</code>. Używane jest <code>vh</code>, nie <code>dvh</code>, jak w referencji. Zachowana jest też minimalna szerokość strony 350 px i cienki scrollbar rodzica.</li>
+                <li>Ramka nie ma atrybutów <code>sandbox</code>, <code>allow</code> ani <code>allowfullscreen</code>. Rodzic nie przechwytuje dotyku, przewijania ani komunikatów gry.</li>
+                <li>Domyślnie ładowany jest lokalny hub. Wybierz grę w nagłówku lub podaj adres w tym oknie. Możesz też otworzyć <code>?src=../gaming-challenge/index.html</code>.</li>
+                <li>Uruchom serwer HTTP z głównego katalogu projektu (np. Live Server w VS Code) i otwórz <code>/iframe-test-v2/</code>. Zmiana rozmiaru okna lub orientacji nie przeładowuje ramki.</li>
+                <li>Produkcja osadza hub z innej domeny. Aby testować to samo ograniczenie origin, podaj adres lokalnej gry z innego portu lub domeny. Ten sam origin nie odwzorowuje ograniczeń pamięci i uprawnień cross-origin.</li>
+                <li>Sprawdzaj dotyk, paski przeglądarki i orientację na fizycznym telefonie. Sam rozmiar okna nie emuluje telefonu. HTTPS i polityki serwera również wpływają na działanie gier.</li>
+                <li>To autorska makieta układu, nie kopia strony. Nie odtwarza cookies, kont, API ani dodatkowych nagłówków HTTP produkcji; nie omija CORS, CSP ani X-Frame-Options.</li>
+            </ul>
+        </details>
+        <p id="file-warning" class="warning" hidden>Otwarto plik z dysku. Użyj serwera HTTP, aby prawidłowo ładować gry i ich zasoby.</p>
+    </dialog>
+</body>
+</html>

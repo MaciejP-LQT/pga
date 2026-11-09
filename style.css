@@ -33,7 +33,7 @@
 html, body {
     height: 100%;
     overflow: hidden;
-    overscroll-behavior-y: none;
+    overscroll-behavior-y: auto;
 }
 
 body {
@@ -66,6 +66,11 @@ button:focus-visible, a:focus-visible {
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior-y: none;
+    touch-action: pan-x pan-y;
+}
+
+.hub-scroll.is-at-top {
+    overscroll-behavior-y: auto;
 }
 
 .hub {
@@ -110,7 +115,7 @@ h1 {
     border-radius: 18px;
     background: #0f1338;
     box-shadow: 0 0 0 6px #1a1f712e, 0 20px 65px #0008, 0 0 65px #3543cb26;
-    touch-action: pan-y pinch-zoom;
+    touch-action: pan-y;
 }
 .track {
     display: flex;
@@ -195,6 +200,11 @@ button.game-art { cursor: default; }
 .noscript { text-align: center; }
 .hub-footer { margin-top: 32px; text-align: center; color: var(--muted); font-size: 12px; }
 .hub-footer a { color: var(--gold); font-weight: 600; }
+
+/* Reserve space below the link when the embedding page obscures the iframe's bottom edge. */
+@media (max-width: 580px), (hover: none) and (pointer: coarse) {
+    .hub-footer { margin-bottom: 120px; }
+}
 
 .view-switch {
     position: fixed;
